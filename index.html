@@ -1,67 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>GBT KAO Plamongan Indah – Bible Verse</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f7f7f7;
-    text-align: center;
-    padding: 40px;
-  }
-  .box {
-    background: white;
-    max-width: 500px;
-    margin: auto;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  input, button {
-    padding: 10px;
-    width: 80%;
-    margin-top: 10px;
-    font-size: 16px;
-  }
-  button {
-    cursor: pointer;
-  }
-  .verse {
-    margin-top: 25px;
-    font-style: italic;
-  }
-</style>
-</head>
-<body>
-
-<div class="box">
-  <h2>GBT KAO Plamongan Indah</h2>
-  <p>Enter your name to receive a Bible verse</p>
-
-  <input id="name" placeholder="Your Name">
-  <button onclick="getVerse()">Get My Verse</button>
-
-  <div class="verse" id="result"></div>
-</div>
-
 <script>
-// KJV – Public Domain
-const verses = [
-  "John 3:16 – For God so loved the world, that he gave his only begotten Son.",
-  "Psalm 23:1 – The Lord is my shepherd; I shall not want.",
-  "Proverbs 3:5 – Trust in the Lord with all thine heart.",
-  "Isaiah 41:10 – Fear thou not; for I am with thee.",
-  "Romans 8:28 – All things work together for good to them that love God.",
-  "Philippians 4:6 – Be careful for nothing; but in every thing by prayer.",
-  "Joshua 1:9 – Be strong and of a good courage.",
-  "Matthew 11:28 – Come unto me, all ye that labour.",
-  "Psalm 46:1 – God is our refuge and strength.",
-  "Hebrews 11:1 – Now faith is the substance of things hoped for."
+// daftar ayat motivasi (referensi saja, bukan isi ayat)
+const references = [
+  "Psalm 23:1",
+  "Isaiah 41:10",
+  "Joshua 1:9",
+  "Romans 8:28",
+  "Philippians 4:6",
+  "Matthew 11:28",
+  "Proverbs 3:5",
+  "Psalm 46:1",
+  "Hebrews 11:1",
+  "John 14:27",
+  "Psalm 37:5",
+  "2 Corinthians 5:7",
+  "Galatians 6:9",
+  "Psalm 121:1",
+  "Isaiah 40:31",
+  "Romans 15:13",
+  "Psalm 34:19",
+  "1 Peter 5:7",
+  "John 16:33",
+  "Psalm 55:22"
 ];
 
-// nama + tahun → ayat konsisten 1 tahun
+// hash nama + tanggal (biar beda tiap hari)
 function hashValue(str) {
   return str.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
 }
@@ -70,13 +32,21 @@ function getVerse() {
   const name = document.getElementById("name").value.trim();
   if (!name) return;
 
-  const year = new Date().getFullYear();
-  const index = hashValue(name + year) % verses.length;
+  const today = new Date().toISOString().slice(0,10);
+  const index = hashValue(name + today) % references.length;
+  const ref = references[index];
 
-  document.getElementById("result").innerHTML =
-    "<strong>Your Verse for Today:</strong><br><br>" + verses[index];
+  fetch("https://bible-api.com/" + encodeURIComponent(ref))
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("result").innerHTML =
+        "<strong>Your Verse for Today:</strong><br><br>" +
+        data.reference + "<br><br>" +
+        data.text;
+    })
+    .catch(() => {
+      document.getElementById("result").innerText =
+        "Failed to load verse. Please try again.";
+    });
 }
 </script>
-
-</body>
-</html>
