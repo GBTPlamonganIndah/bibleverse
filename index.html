@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Ayat untuk Hari Ini</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{
   font-family: Arial, sans-serif;
@@ -45,10 +46,13 @@ button{
 }
 </style>
 </head>
+
 <body>
 
 <div class="card">
-  <img src="logo.png" alt="Logo Gereja">
+  <!-- LOGO -->
+  <img src="assets/img/logo.png" alt="Logo Gereja">
+
   <h2>Ayat untuk Hari Ini</h2>
   <p>Masukkan nama Anda dan terimalah satu ayat firman Tuhan setiap hari.</p>
 
@@ -66,7 +70,7 @@ button{
 
 <script>
 // ==================================================
-// 300 REFERENSI AYAT MOTIVASI (LAI) — SUDAH DIHITUNG
+// 300 REFERENSI AYAT MOTIVASI (LAI) — FULL
 // ==================================================
 const referencesLAI = [
 /* MAZMUR (90) */
@@ -177,7 +181,7 @@ function getVerse(){
    .then(r=>r.json())
    .then(d=>{
      lastText=refLAI+"\n\n"+d.text;
-     document.getElementById("result").innerHTML=
+     document.getElementById("result").innerHTML =
        "<strong>"+refLAI+"</strong><br><br>"+d.text;
      document.getElementById("actions").style.display="block";
    });
