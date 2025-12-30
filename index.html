@@ -5,7 +5,7 @@ function hashValue(str){
 
 function convertToAPI(ref){
   return ref
-    // kitab PL
+    // PL
     .replace(/^Mazmur/, "Psalm")
     .replace(/^Amsal/, "Proverbs")
     .replace(/^Yesaya/, "Isaiah")
@@ -49,10 +49,10 @@ function getVerse(){
   const today=new Date().toISOString().slice(0,10);
   const idx=hashValue(name+today)%referencesLAI.length;
 
-  const refLAI=referencesLAI[idx];
-  const refAPI=convertToAPI(refLAI);
+  const refLAI = referencesLAI[idx];   // referensi Indonesia
+  const refAPI = convertToAPI(refLAI); // untuk API
 
-  fetch("https://bible-api.com/"+encodeURIComponent(refAPI))
+  fetch("https://bible-api.com/"+encodeURIComponent(refAPI)+"?translation=kjv")
     .then(r=>r.json())
     .then(d=>{
       if(!d.text){
@@ -60,9 +60,14 @@ function getVerse(){
           "<strong>"+refLAI+"</strong><br><br>(Ayat tidak tersedia)";
         return;
       }
-      lastText=refLAI+"\n\n"+d.text;
+
+      lastText = refLAI + "\n\n" + d.text;
+
       document.getElementById("result").innerHTML =
-        "<strong>"+refLAI+"</strong><br><br>"+d.text;
+        "<strong>"+refLAI+"</strong><br><br>" +
+        d.text +
+        "<br><br><small><em>Version: KJV</em></small>";
+
       document.getElementById("actions").style.display="block";
     });
 }
