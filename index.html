@@ -72,11 +72,12 @@ button{
 #actions{display:none;margin-top:12px}
 #hint{color:#fff;margin-top:14px;display:none}
 
+/* TAP LAYER – AMAN */
 #tapLayer{
-  display:none;
   position:fixed;
   inset:0;
-  z-index:10;
+  display:none;
+  pointer-events:none;
 }
 
 canvas{display:none}
@@ -101,7 +102,6 @@ canvas{display:none}
 </div>
 
 <div id="hint">Tap layar untuk berhenti</div>
-
 <div id="tapLayer"></div>
 
 <canvas id="canvas" width="1080" height="1920"></canvas>
@@ -114,7 +114,9 @@ const verses=[
 let shuffle=null;
 let lastText="", lastName="";
 
-startBtn.onclick=()=>{
+startBtn.addEventListener("click",(e)=>{
+  e.stopPropagation();
+
   lastName=name.value.trim();
   if(!lastName) return;
 
@@ -126,21 +128,27 @@ startBtn.onclick=()=>{
 
   result.style.display="block";
   hint.style.display="block";
+
   tapLayer.style.display="block";
+  tapLayer.style.pointerEvents="auto";
 
   shuffle=setInterval(()=>{
     const v=verses[0];
     result.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   },80);
-};
+});
 
-tapLayer.onclick=()=>{
+tapLayer.addEventListener("click",()=>{
   clearInterval(shuffle);
+
   tapLayer.style.display="none";
+  tapLayer.style.pointerEvents="none";
+
   hint.style.display="none";
   actions.style.display="block";
+
   lastText=verses[0].ref+"\n\n"+verses[0].text;
-};
+});
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
