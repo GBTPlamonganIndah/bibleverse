@@ -99,7 +99,8 @@ button:hover{background:#1b5fa7}
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<button onclick="prepareVerse()">Ambil Ayat</button>
+<!-- ✅ DIUBAH: kirim event -->
+<button onclick="prepareVerse(event)">Ambil Ayat</button>
 
 <div id="hint">👆 Tap layar untuk memilih ayat</div>
 <div id="result"></div>
@@ -137,9 +138,13 @@ const verses = [
 let lastText="", lastName="", ready=false;
 let shuffleInterval=null;
 
-function prepareVerse(){
+/* ✅ DIUBAH: stopPropagation agar hint tidak langsung hilang */
+function prepareVerse(e){
+  e.stopPropagation();
+
   const n=document.getElementById("name").value.trim();
   if(!n)return;
+
   lastName=n;
   ready=true;
   document.getElementById("hint").style.display="block";
