@@ -96,7 +96,7 @@ button:hover{background:rgba(255,255,255,.15)}
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<button onclick="startProcess()">Ambil Ayat</button>
+<button onclick="startProcess(event)">Ambil Ayat</button>
 
 <div id="result"></div>
 
@@ -135,7 +135,9 @@ let shuffleInterval=null;
 let tapEnabled=false;
 let lastText="", lastName="";
 
-function startProcess(){
+function startProcess(e){
+  e.stopPropagation(); // ⬅️ PENTING: cegah klik body
+
   const n=document.getElementById("name").value.trim();
   if(!n)return;
 
@@ -144,8 +146,10 @@ function startProcess(){
   r.style.display="block";
 
   document.getElementById("hint").style.display="block";
+  document.getElementById("actions").style.display="none";
   tapEnabled=true;
 
+  clearInterval(shuffleInterval);
   shuffleInterval=setInterval(()=>{
     const v=verses[Math.floor(Math.random()*verses.length)];
     r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
