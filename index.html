@@ -26,7 +26,6 @@
 
   img { width:130px; margin-bottom:15px; }
 
-  /* === TEKS FIRMAN JADI PUTIH === */
   em {
     font-style: italic;
     font-size: 18px;
@@ -87,22 +86,59 @@
 </div>
 
 <script>
+/* =======================
+   AYAT KJV (INGGRIS)
+======================= */
 const versesKJV = [
-{ref:"Genesis 1:1", text:"In the beginning God created the heaven and the earth."},
-{ref:"Genesis 50:20", text:"But as for you, ye thought evil against me; but God meant it unto good."},
-{ref:"Exodus 14:14", text:"The LORD shall fight for you, and ye shall hold your peace."},
-{ref:"Deuteronomy 31:6", text:"Be strong and of a good courage, fear not."},
-{ref:"Joshua 1:9", text:"Be strong and of a good courage; be not afraid."},
-{ref:"Joshua 24:15", text:"As for me and my house, we will serve the LORD."},
-{ref:"Psalm 23:1", text:"The LORD is my shepherd; I shall not want."},
-{ref:"Psalm 119:105", text:"Thy word is a lamp unto my feet."},
-{ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee."},
-{ref:"Matthew 11:28", text:"Come unto me, all ye that labour."},
-{ref:"John 14:27", text:"Peace I leave with you."},
-{ref:"Romans 8:28", text:"All things work together for good."},
-{ref:"Philippians 4:13", text:"I can do all things through Christ."},
-{ref:"Revelation 21:4", text:"God shall wipe away all tears."}
+{ref:"Genesis 1:1", text:"In the beginning God created the heaven and the earth.", lang:"KJV"},
+{ref:"Genesis 50:20", text:"But as for you, ye thought evil against me; but God meant it unto good.", lang:"KJV"},
+{ref:"Exodus 14:14", text:"The LORD shall fight for you, and ye shall hold your peace.", lang:"KJV"},
+{ref:"Deuteronomy 31:6", text:"Be strong and of a good courage, fear not.", lang:"KJV"},
+{ref:"Joshua 1:9", text:"Be strong and of a good courage; be not afraid.", lang:"KJV"},
+{ref:"Psalm 23:1", text:"The LORD is my shepherd; I shall not want.", lang:"KJV"},
+{ref:"Psalm 27:1", text:"The LORD is my light and my salvation; whom shall I fear?", lang:"KJV"},
+{ref:"Psalm 46:1", text:"God is our refuge and strength, a very present help in trouble.", lang:"KJV"},
+{ref:"Psalm 119:105", text:"Thy word is a lamp unto my feet.", lang:"KJV"},
+{ref:"Isaiah 40:31", text:"They that wait upon the LORD shall renew their strength.", lang:"KJV"},
+{ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee.", lang:"KJV"},
+{ref:"Jeremiah 29:11", text:"For I know the thoughts that I think toward you, saith the LORD.", lang:"KJV"},
+{ref:"Matthew 6:33", text:"Seek ye first the kingdom of God.", lang:"KJV"},
+{ref:"Matthew 11:28", text:"Come unto me, all ye that labour.", lang:"KJV"},
+{ref:"John 3:16", text:"For God so loved the world.", lang:"KJV"},
+{ref:"John 14:27", text:"Peace I leave with you.", lang:"KJV"},
+{ref:"Romans 8:28", text:"All things work together for good.", lang:"KJV"},
+{ref:"Philippians 4:13", text:"I can do all things through Christ.", lang:"KJV"},
+{ref:"Hebrews 13:5", text:"I will never leave thee, nor forsake thee.", lang:"KJV"},
+{ref:"Revelation 21:4", text:"God shall wipe away all tears.", lang:"KJV"}
 ];
+
+/* =======================
+   AYAT INDONESIA (PARAFRASE ROHANI)
+======================= */
+const versesID = [
+{ref:"Mazmur 23:1", text:"Tuhan adalah gembala yang setia; hidupku terpelihara dengan baik.", lang:"ID"},
+{ref:"Mazmur 27:1", text:"Tuhan adalah terang dan keselamatanku, aku tidak perlu takut.", lang:"ID"},
+{ref:"Mazmur 46:1", text:"Tuhan adalah tempat perlindungan dan kekuatan yang selalu hadir.", lang:"ID"},
+{ref:"Mazmur 119:105", text:"Firman Tuhan menuntun langkah hidupku setiap hari.", lang:"ID"},
+{ref:"Amsal 3:5", text:"Percayalah sepenuhnya kepada Tuhan dan jangan mengandalkan dirimu sendiri.", lang:"ID"},
+{ref:"Yesaya 40:31", text:"Orang yang berharap kepada Tuhan menerima kekuatan baru.", lang:"ID"},
+{ref:"Yesaya 41:10", text:"Jangan takut, Tuhan menyertai dan meneguhkanmu.", lang:"ID"},
+{ref:"Yeremia 29:11", text:"Rencana Tuhan penuh damai dan pengharapan untuk masa depan.", lang:"ID"},
+{ref:"Ratapan 3:23", text:"Kasih setia Tuhan selalu baru setiap pagi.", lang:"ID"},
+{ref:"Matius 6:33", text:"Utamakan Kerajaan Allah, maka Tuhan mencukupi keperluanmu.", lang:"ID"},
+{ref:"Matius 11:28", text:"Tuhan memberi kelegaan bagi jiwa yang letih dan berbeban.", lang:"ID"},
+{ref:"Yohanes 14:27", text:"Damai sejahtera Tuhan tinggal di hatimu.", lang:"ID"},
+{ref:"Roma 8:28", text:"Tuhan bekerja dalam segala hal untuk mendatangkan kebaikan.", lang:"ID"},
+{ref:"Filipi 4:13", text:"Bersama Kristus, aku dimampukan menghadapi segala keadaan.", lang:"ID"},
+{ref:"Ibrani 13:5", text:"Tuhan tidak pernah meninggalkan umat-Nya.", lang:"ID"},
+{ref:"Yakobus 1:5", text:"Tuhan memberi hikmat kepada siapa pun yang meminta.", lang:"ID"},
+{ref:"1 Petrus 5:7", text:"Serahkan segala kekhawatiranmu kepada Tuhan.", lang:"ID"},
+{ref:"1 Yohanes 4:4", text:"Kuasa Tuhan yang menyertaimu lebih besar dari segalanya.", lang:"ID"},
+{ref:"Wahyu 21:4", text:"Tuhan menghapus air mata dan memberi pengharapan kekal.", lang:"ID"}
+];
+
+/* === GABUNG & RANDOM === */
+const allVerses = [...versesKJV, ...versesID];
 
 let lastText="";
 let lastName="";
@@ -112,17 +148,16 @@ function getVerse(){
   if(!nameInput.value.trim()) return;
 
   lastName = nameInput.value.trim();
-  const v = versesKJV[Math.floor(Math.random()*versesKJV.length)];
+  const v = allVerses[Math.floor(Math.random()*allVerses.length)];
 
   lastText = v.ref + "\n\n" + v.text;
 
   document.getElementById("result").innerHTML =
-    `<strong>${v.ref}</strong><br><br>${v.text}<br><br><small><em>KJV</em></small>`;
+    `<strong>${v.ref}</strong><br><br>${v.text}<br><br><small><em>${v.lang}</em></small>`;
 
   document.getElementById("actions").style.display="block";
 }
 
-/* === AUTO AMBIL AYAT DARI LINK ?name= === */
 window.onload = () => {
   const params = new URLSearchParams(window.location.search);
   const name = params.get("name");
@@ -137,7 +172,6 @@ function copyVerse(){
   alert("Ayat berhasil disalin");
 }
 
-/* === SHARE PAKAI LINK (WA / IG / STORY) === */
 function shareVerse(){
   const baseURL = window.location.origin + window.location.pathname;
   const shareURL = `${baseURL}?name=${encodeURIComponent(lastName)}`;
@@ -158,7 +192,7 @@ ${shareURL}`;
     });
   } else {
     navigator.clipboard.writeText(shareText);
-    alert("Link ayat siap dibagikan ke Story / WhatsApp / Instagram");
+    alert("Link ayat siap dibagikan");
   }
 }
 </script>
