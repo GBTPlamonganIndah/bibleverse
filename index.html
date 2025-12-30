@@ -1,31 +1,54 @@
 <script>
-// daftar ayat motivasi (referensi saja, bukan isi ayat)
-const references = [
-  "Psalm 23:1",
-  "Isaiah 41:10",
-  "Joshua 1:9",
-  "Romans 8:28",
-  "Philippians 4:6",
-  "Matthew 11:28",
-  "Proverbs 3:5",
-  "Psalm 46:1",
-  "Hebrews 11:1",
-  "John 14:27",
-  "Psalm 37:5",
-  "2 Corinthians 5:7",
-  "Galatians 6:9",
-  "Psalm 121:1",
-  "Isaiah 40:31",
-  "Romans 15:13",
-  "Psalm 34:19",
-  "1 Peter 5:7",
-  "John 16:33",
-  "Psalm 55:22"
+// ===============================
+// REFERENSI LAI (INDONESIA)
+// ===============================
+const referencesLAI = [
+  "Mazmur 23:1","Yesaya 41:10","Yosua 1:9","Roma 8:28","Filipi 4:6",
+  "Matius 11:28","Amsal 3:5","Mazmur 46:1","Ibrani 11:1","Yohanes 14:27",
+  "Mazmur 37:5","2 Korintus 5:7","Galatia 6:9","Mazmur 121:1","Yesaya 40:31",
+  "Roma 15:13","Mazmur 34:19","1 Petrus 5:7","Yohanes 16:33","Mazmur 55:22"
+  // (boleh kamu tambah sampai 200–300 referensi LAI)
 ];
 
-// hash nama + tanggal (biar beda tiap hari)
+// ===============================
+// MAP NAMA KITAB LAI → ENGLISH
+// (supaya API KJV tetap jalan)
+// ===============================
+const bookMap = {
+  "Mazmur": "Psalm",
+  "Yesaya": "Isaiah",
+  "Yosua": "Joshua",
+  "Roma": "Romans",
+  "Filipi": "Philippians",
+  "Matius": "Matthew",
+  "Amsal": "Proverbs",
+  "Ibrani": "Hebrews",
+  "Yohanes": "John",
+  "Korintus": "Corinthians",
+  "Galatia": "Galatians",
+  "Petrus": "Peter"
+};
+
+// hash nama + tanggal (beda tiap hari)
 function hashValue(str) {
   return str.split("").reduce((a, b) => a + b.charCodeAt(0), 0);
+}
+
+// ubah referensi LAI → format API (English)
+function convertToAPI(ref) {
+  let parts = ref.split(" ");
+  let book = parts[0];
+  let rest = parts.slice(1).join(" ");
+
+  // dukung kitab 1 / 2
+  if (!isNaN(book)) {
+    const num = book;
+    const name = parts[1];
+    rest = parts.slice(2).join(" ");
+    return num + " " + (bookMap[name] || name) + " " + rest;
+  }
+
+  return (bookMap[book] || book) + " " + rest;
 }
 
 function getVerse() {
@@ -33,20 +56,21 @@ function getVerse() {
   if (!name) return;
 
   const today = new Date().toISOString().slice(0,10);
-  const index = hashValue(name + today) % references.length;
-  const ref = references[index];
+  const index = hashValue(name + today) % referencesLAI.length;
+  const refLAI = referencesLAI[index];
+  const refAPI = convertToAPI(refLAI);
 
-  fetch("https://bible-api.com/" + encodeURIComponent(ref))
+  fetch("https://bible-api.com/" + encodeURIComponent(refAPI))
     .then(res => res.json())
     .then(data => {
       document.getElementById("result").innerHTML =
-        "<strong>Your Verse for Today:</strong><br><br>" +
-        data.reference + "<br><br>" +
+        "<strong>Ayat untuk Hari Ini</strong><br><br>" +
+        refLAI + "<br><br>" +
         data.text;
     })
     .catch(() => {
       document.getElementById("result").innerText =
-        "Failed to load verse. Please try again.";
+        "Gagal memuat ayat. Silakan coba lagi.";
     });
 }
 </script>
