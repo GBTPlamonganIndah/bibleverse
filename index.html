@@ -110,40 +110,32 @@ button:hover{background:#1b5fa7}
 </div>
 
 <script>
-/* ===== AYAT INGGRIS + INDONESIA (DITAMBAH) ===== */
+/* ===== AYAT INGGRIS + INDONESIA ===== */
 const verses = [
 {ref:"Psalm 23:1",text:"The LORD is my shepherd; I shall not want."},
 {ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
-
 {ref:"Isaiah 41:10",text:"Fear thou not; for I am with thee."},
 {ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
-
 {ref:"Jeremiah 29:11",text:"For I know the plans I have for you."},
 {ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
-
 {ref:"Matthew 11:28",text:"Come unto me, all ye that labour."},
 {ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
-
 {ref:"John 14:27",text:"Peace I leave with you."},
 {ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
-
 {ref:"Romans 8:28",text:"All things work together for good."},
 {ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
-
 {ref:"Philippians 4:13",text:"I can do all things through Christ."},
 {ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung."},
-
 {ref:"Psalm 46:1",text:"God is our refuge and strength."},
 {ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan."},
-
 {ref:"Hebrews 13:5",text:"I will never leave thee."},
 {ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau."},
-
 {ref:"Revelation 21:4",text:"God shall wipe away all tears."},
 {ref:"Wahyu 21:4",text:"Allah akan menghapus segala air mata."}
 ];
 
 let lastText="", lastName="", ready=false;
+let shuffleInterval=null;
 
 function prepareVerse(){
   const n=document.getElementById("name").value.trim();
@@ -153,18 +145,33 @@ function prepareVerse(){
   document.getElementById("hint").style.display="block";
 }
 
+/* ===== TAP → AYAT BERPUTAR → BERHENTI ===== */
 document.body.addEventListener("click",()=>{
   if(!ready)return;
   ready=false;
   document.getElementById("hint").style.display="none";
-  showVerse();
+  startShuffle();
 });
 
-function showVerse(){
+function startShuffle(){
+  const r=document.getElementById("result");
+  r.style.display="block";
+
+  shuffleInterval=setInterval(()=>{
+    const v=verses[Math.floor(Math.random()*verses.length)];
+    r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
+  },90);
+
+  setTimeout(()=>{
+    clearInterval(shuffleInterval);
+    showFinalVerse();
+  },1300);
+}
+
+function showFinalVerse(){
   const v=verses[Math.floor(Math.random()*verses.length)];
   lastText=v.ref+"\n\n"+v.text;
   const r=document.getElementById("result");
-  r.style.display="block";
   r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   document.getElementById("actions").style.display="block";
 }
