@@ -12,7 +12,6 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 
-<!-- ===== FAVICON ===== -->
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="favicon.png">
 
@@ -76,11 +75,14 @@ button:hover{background:rgba(255,255,255,.15)}
 
 #result{
   margin-top:20px;
-  text-align:left;
   line-height:1.6;
   color:#fff;
   text-shadow:0 2px 6px rgba(0,0,0,.6);
   display:none;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  text-align:left;
 }
 
 #actions{margin-top:12px;display:none}
@@ -107,17 +109,14 @@ button:hover{background:rgba(255,255,255,.15)}
 <canvas id="canvas" width="1080" height="1920" style="display:none"></canvas>
 
 <script>
-const verses = [
+const verses=[
 {ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
 {ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
 {ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
 {ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
 {ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
-{ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia, yaitu bagi mereka yang terpanggil sesuai dengan rencana-Nya."},
-{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung oleh Dia yang memberi kekuatan kepadaku."},
-{ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan, sebagai penolong dalam kesesakan sangat terbukti."},
-{ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau dan tidak akan membiarkan engkau terombang-ambing."},
-{ref:"Wahyu 21:4",text:"Dan Ia akan menghapus segala air mata dari mata mereka, dan maut tidak akan ada lagi; tidak akan ada lagi perkabungan, ratap tangis atau dukacita."}
+{ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."},
+{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung oleh Dia yang memberi kekuatan kepadaku."}
 ];
 
 let shuffleInterval=null;
@@ -135,7 +134,7 @@ function startProcess(e){
 
   document.getElementById("hint").style.display="block";
   document.getElementById("actions").style.display="none";
-  document.getElementById("startBtn").style.display="none"; // hilangkan tombol ambil ayat
+  document.getElementById("startBtn").style.display="none";
   tapEnabled=true;
 
   clearInterval(shuffleInterval);
@@ -158,62 +157,55 @@ document.body.addEventListener("click",()=>{
   document.getElementById("result").innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
 });
 
-/* SALIN TEKS */
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
-  alert("Ayat berhasil disalin");
 }
 
-/* BAGI GAMBAR UNTUK STORY / SHARE */
 function shareAsImage(){
   const canvas=document.getElementById("canvas");
   const ctx=canvas.getContext("2d");
 
   const bg=new Image();
   bg.src="background.jpeg";
-  const logo=document.getElementById("logo");
-  const nameText=lastName;
+
+  const logoImg=new Image();
+  logoImg.src="logo.png";
 
   bg.onload=()=>{
-    ctx.drawImage(bg,0,0,canvas.width,canvas.height);
+    ctx.drawImage(bg,0,0,1080,1920);
 
-    // logo di kiri atas
-    const logoImg=new Image();
-    logoImg.src=logo.src;
     logoImg.onload=()=>{
-      ctx.drawImage(logoImg,50,50,150,150);
+      const logoSize=180;
+      const logoX=(1080-logoSize)/2;
+      const logoY=420;
+      ctx.drawImage(logoImg,logoX,logoY,logoSize,logoSize);
 
-      // nama di kiri bawah logo
       ctx.fillStyle="#fff";
-      ctx.font="36px Arial";
       ctx.textAlign="left";
-      ctx.shadowColor="rgba(0,0,0,0.7)";
-      ctx.shadowOffsetX=2;
-      ctx.shadowOffsetY=2;
-      ctx.shadowBlur=4;
-      ctx.fillText(nameText,50,220);
+      ctx.shadowColor="rgba(0,0,0,.6)";
+      ctx.shadowBlur=6;
 
-      // ayat rata kiri di bawah nama
+      ctx.font="bold 40px Arial";
+      ctx.fillText(lastName,120,680);
+
       ctx.font="48px Arial";
-      wrapText(ctx,lastText,50,280,980,64);
+      wrapText(ctx,lastText,120,760,840,64);
 
-      // footer
-      ctx.font="italic 32px Arial";
-      ctx.fillText("BibleVerse GBT Plamongan Indah",50,1800);
-
-      canvas.toBlob((blob)=>{
-        const file = new File([blob],"ayat.png",{type:"image/png"});
-        if(navigator.canShare && navigator.canShare({files:[file]})){
-          navigator.share({files:[file],title:"BibleVerse",text:"Ayat Firman Tuhan"});
-        }else{
-          const link=document.createElement("a");
-          link.href=URL.createObjectURL(blob);
-          link.download="ayat-firman.png";
-          link.click();
-        }
+      canvas.toBlob(blob=>{
+        const file=new File([blob],"ayat.png",{type:"image/png"});
+        navigator.share
+          ? navigator.share({files:[file]})
+          : download(blob);
       });
     };
   };
+}
+
+function download(blob){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="ayat.png";
+  a.click();
 }
 
 function wrapText(ctx,text,x,y,maxWidth,lineHeight){
@@ -221,8 +213,7 @@ function wrapText(ctx,text,x,y,maxWidth,lineHeight){
   let line="";
   for(let i=0;i<words.length;i++){
     const testLine=line+words[i]+" ";
-    const w=ctx.measureText(testLine).width;
-    if(w>maxWidth && i>0){
+    if(ctx.measureText(testLine).width>maxWidth){
       ctx.fillText(line,x,y);
       line=words[i]+" ";
       y+=lineHeight;
