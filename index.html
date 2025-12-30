@@ -1,139 +1,78 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<meta property="og:title" content="BibleVerse GBT Plamongan Indah">
-<meta property="og:description" content="Firman-Nya lah pelita bagi ku setiap hari">
-<meta property="og:image" content="https://gbtplamonganindah.github.io/bibleverse/background.jpeg">
-<meta property="og:type" content="website">
-
-<title>BibleVerse GBT Plamongan Indah</title>
-
-<style>
-body{font-family:Arial,sans-serif;text-align:center;padding:20px;min-height:100vh;
-  background:url("background.jpeg") center/cover no-repeat fixed;}
-
-img{width:130px;margin-bottom:15px}
-
-em{color:#fff;display:block;margin-bottom:20px;text-shadow:0 2px 6px rgba(0,0,0,.6);}
-
-input{
-  background:transparent;border:none;border-bottom:2px solid #fff;outline:none;
-  color:#fff;width:260px;padding:8px;font-size:16px;text-align:center;}
-
-#displayName{display:none;margin-top:14px;font-size:26px;font-weight:bold;
-  color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6);}
-
-button{
-  margin-top:10px;padding:10px 18px;font-size:15px;border:2px solid #fff;
-  background:transparent;color:#fff;border-radius:6px;cursor:pointer;}
-
-#result{display:none;margin-top:20px;color:#fff;text-align:left;
-  text-shadow:0 2px 6px rgba(0,0,0,.6);}
-
-#actions{display:none;margin-top:12px}
-#hint{color:#fff;margin-top:14px;display:none;font-size:16px;}
-
-#tapArea{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:1;}
-canvas{display:none;}
-</style>
-</head>
-
-<body>
-
-<img src="logo.png">
-<em>Firman-Nya lah pelita bagi ku setiap hari</em>
-
-<input id="name" placeholder="Masukkan Nama Anda"><br>
-<div id="displayName"></div>
-
-<button id="startBtn" onclick="startProcess(event)">Ambil Ayat</button>
-
-<div id="result"></div>
-
-<div id="actions">
-  <button onclick="copyVerse()">Salin Ayat</button>
-  <button onclick="shareAsImage()">Bagikan Ayat</button>
-</div>
-
-<div id="hint">Tap layar untuk berhenti</div>
-
-<div id="tapArea"></div>
-
-<canvas id="canvas" width="1080" height="1920"></canvas>
-
 <script>
 const verses=[
- {ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."}
+  {
+    ref:"Roma 8:28",
+    text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."
+  }
 ];
 
-let shuffle=null, lastText="", lastName="";
+let shuffle=null;
+let lastText="", lastName="";
+const verse = verses[0]; // kunci ayat
 
-function startProcess(e){
-  e.stopPropagation();
+startBtn.onclick=()=>{
+  lastName=name.value.trim();
+  if(!lastName) return;
 
-  const n = document.getElementById("name").value.trim();
-  if(!n) return;
-
-  lastName = n;
-  
-  // hide input & button
   name.style.display="none";
   startBtn.style.display="none";
 
-  displayName.innerText = lastName;
+  displayName.innerText=lastName;
   displayName.style.display="block";
 
   result.style.display="block";
   hint.style.display="block";
-
-  // show tappable full screen area
   tapArea.style.display="block";
 
-  shuffle = setInterval(()=>{
-    const v=verses[0];
-    result.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
+  // tampilkan pertama kali (ANTI KOSONG)
+  result.innerHTML=`<strong>${verse.ref}</strong><br><br>${verse.text}`;
+
+  shuffle=setInterval(()=>{
+    result.innerHTML=`<strong>${verse.ref}</strong><br><br>${verse.text}`;
   },80);
-}
+};
 
-// TAP STOP
-tapArea.addEventListener("click",()=>{
-
+tapArea.onclick=()=>{
   clearInterval(shuffle);
-  tapArea.style.display="none"; 
+
+  // KUNCI AYAT (INI YANG HILANG KEMARIN)
+  result.innerHTML=`<strong>${verse.ref}</strong><br><br>${verse.text}`;
+
+  tapArea.style.display="none";
   hint.style.display="none";
   actions.style.display="block";
 
-  lastText = verses[0].ref + "\n\n" + verses[0].text;
-});
+  lastText = verse.ref + "\n\n" + verse.text;
+};
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
 }
 
 function shareAsImage(){
-  const c = canvas, ctx = c.getContext("2d");
-
-  const bg=new Image(); bg.src="background.jpeg";
-  const logo=new Image(); logo.src="logo.png";
+  const c=canvas,ctx=c.getContext("2d");
+  const bg=new Image();
+  bg.src="background.jpeg";
+  const logo=new Image();
+  logo.src="logo.png";
 
   bg.onload=()=>{
-    const iw=bg.width,ih=bg.height;
-    const cw=1080,ch=1920;
-    const r=Math.max(cw/iw,ch/ih);
-    const nw=iw*r,nh=ih*r;
-
-    ctx.drawImage(bg,(cw-nw)/2,(ch-nh)/2,nw,nh);
+    const r=Math.max(1080/bg.width,1920/bg.height);
+    ctx.drawImage(
+      bg,
+      (1080-bg.width*r)/2,
+      (1920-bg.height*r)/2,
+      bg.width*r,
+      bg.height*r
+    );
 
     logo.onload=()=>{
-      ctx.drawImage(logo,(cw-180)/2,420,180,180);
+      ctx.drawImage(logo,(1080-180)/2,420,180,180);
 
       ctx.fillStyle="#fff";
       ctx.textAlign="left";
       ctx.shadowColor="rgba(0,0,0,.6)";
-      ctx.shadowBlur=8;
+      ctx.shadowBlur=6;
 
       ctx.font="bold 56px Arial";
       ctx.fillText(lastName,120,820);
@@ -142,35 +81,26 @@ function shareAsImage(){
       wrapText(ctx,lastText,120,900,840,64);
 
       c.toBlob(b=>{
-        const f=new File([b],"ayat.png",{type:"image/png"});
-        if(navigator.canShare && navigator.canShare({files:[f]})){
-          navigator.share({files:[f]});
-        } else {
-          const a=document.createElement("a");
-          a.href=URL.createObjectURL(b);
-          a.download="ayat.png";
-          a.click();
-        }
+        navigator.share({
+          files:[new File([b],"ayat.png",{type:"image/png"})]
+        });
       });
     };
   };
 }
 
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+function wrapText(ctx,text,x,y,w,h){
   let line="";
   text.split(" ").forEach(word=>{
-    const testLine = line + word + " ";
-    if(ctx.measureText(testLine).width > maxWidth){
+    const test=line+word+" ";
+    if(ctx.measureText(test).width>w){
       ctx.fillText(line,x,y);
-      line = word + " ";
-      y += lineHeight;
-    } else {
-      line = testLine;
+      line=word+" ";
+      y+=h;
+    }else{
+      line=test;
     }
   });
   ctx.fillText(line,x,y);
 }
 </script>
-
-</body>
-</html>
