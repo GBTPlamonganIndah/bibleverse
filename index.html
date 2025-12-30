@@ -26,7 +26,6 @@ body{
 
 img{width:130px;margin-bottom:15px}
 
-/* FIRMAN FADE */
 em{
   font-style:italic;
   font-size:18px;
@@ -50,7 +49,6 @@ input{
   font-size:16px;
 }
 
-/* BUTTON OUTLINE PUTIH */
 button{
   padding:10px 18px;
   margin:6px;
@@ -62,9 +60,7 @@ button{
   color:#fff;
 }
 
-button:hover{
-  background:rgba(255,255,255,.15);
-}
+button:hover{background:rgba(255,255,255,.15)}
 
 #hint{
   margin-top:14px;
@@ -84,12 +80,6 @@ button:hover{
   text-align:left;
   line-height:1.6;
   display:none;
-  animation:verseIn .6s ease;
-}
-
-@keyframes verseIn{
-  from{opacity:0;transform:scale(.97)}
-  to{opacity:1;transform:scale(1)}
 }
 
 #actions{margin-top:12px;display:none}
@@ -138,7 +128,7 @@ const verses = [
 ];
 
 let shuffleInterval=null;
-let finalReady=false;
+let tapEnabled=false;
 let lastText="", lastName="";
 
 function startProcess(){
@@ -149,21 +139,25 @@ function startProcess(){
   const r=document.getElementById("result");
   r.style.display="block";
 
-  /* === PERBAIKAN UTAMA: hint muncul LANGSUNG === */
   document.getElementById("hint").style.display="block";
-  finalReady=true;
+  tapEnabled=false;
 
   shuffleInterval=setInterval(()=>{
     const v=verses[Math.floor(Math.random()*verses.length)];
     r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   },80);
+
+  /* TAP BARU AKTIF SETELAH SHUFFLE SELESAI */
+  setTimeout(()=>{
+    clearInterval(shuffleInterval);
+    tapEnabled=true;
+  },1200);
 }
 
 document.body.addEventListener("click",()=>{
-  if(!finalReady)return;
+  if(!tapEnabled)return;
 
-  finalReady=false;
-  clearInterval(shuffleInterval);
+  tapEnabled=false;
   document.getElementById("hint").style.display="none";
   document.getElementById("actions").style.display="block";
 
