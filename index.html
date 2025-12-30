@@ -11,18 +11,9 @@
     padding:20px;
     min-height:100vh;
 
-    /* ===== BACKGROUND IMAGE ===== */
+    /* ===== BACKGROUND IMAGE (LANGSUNG, TANPA LAYER PUTIH) ===== */
     background: url("background.jpeg") no-repeat center center fixed;
     background-size: cover;
-  }
-
-  /* overlay supaya teks tetap jelas */
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background:rgba(255,255,255,0.85);
-    z-index:-1;
   }
 
   img { width:130px; margin-bottom:15px; }
