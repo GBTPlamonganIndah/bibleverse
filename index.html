@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ===== META SHARE WHATSAPP / INSTAGRAM ===== -->
+<!-- ===== META SHARE ===== -->
 <meta property="og:title" content="BibleVerse GBT Plamongan Indah">
 <meta property="og:description" content="Firman-Nya lah pelita bagi ku setiap hari">
 <meta property="og:image" content="https://gbtplamonganindah.github.io/bibleverse/background.jpeg">
@@ -15,69 +15,93 @@
 <title>BibleVerse GBT Plamongan Indah</title>
 
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align:center;
-    padding:20px;
-    min-height:100vh;
-    background: url("background.jpeg") no-repeat center center fixed;
-    background-size: cover;
-  }
+body{
+  font-family:Arial,sans-serif;
+  text-align:center;
+  padding:20px;
+  min-height:100vh;
+  background:url("background.jpeg") no-repeat center center fixed;
+  background-size:cover;
+}
 
-  img { width:130px; margin-bottom:15px; }
+img{width:130px;margin-bottom:15px}
 
-  em {
-    font-style: italic;
-    font-size: 18px;
-    display:block;
-    margin-bottom:20px;
-    color:#ffffff;
-    text-shadow:0 2px 6px rgba(0,0,0,0.6);
-  }
+/* FIRMAN FADE */
+em{
+  font-style:italic;
+  font-size:18px;
+  display:block;
+  margin-bottom:20px;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
+  opacity:0;
+  animation:fadeText 2s ease forwards;
+}
 
-  input {
-    padding:8px;
-    width:260px;
-    margin:10px auto;
-    font-size:16px;
-  }
+@keyframes fadeText{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
-  button {
-    padding:10px 18px;
-    margin:6px;
-    font-size:15px;
-    cursor:pointer;
-    border:none;
-    border-radius:6px;
-    background:#2c7be5;
-    color:#fff;
-  }
+input{
+  padding:8px;
+  width:260px;
+  margin:10px auto;
+  font-size:16px;
+}
 
-  button:hover { background:#1b5fa7; }
+button{
+  padding:10px 18px;
+  margin:6px;
+  font-size:15px;
+  cursor:pointer;
+  border:none;
+  border-radius:6px;
+  background:#2c7be5;
+  color:#fff;
+}
 
-  #result {
-    margin-top:20px;
-    padding:18px;
-    background:#fff;
-    border-radius:8px;
-    max-width:680px;
-    margin:auto;
-    text-align:left;
-    line-height:1.6;
-  }
+button:hover{background:#1b5fa7}
 
-  #actions { margin-top:12px; display:none; }
+#hint{
+  margin-top:18px;
+  color:#fff;
+  font-size:15px;
+  display:none;
+  opacity:.9;
+}
+
+#result{
+  margin-top:20px;
+  padding:18px;
+  background:#fff;
+  border-radius:8px;
+  max-width:680px;
+  margin:auto;
+  text-align:left;
+  line-height:1.6;
+  display:none;
+  animation:verseIn .6s ease;
+}
+
+@keyframes verseIn{
+  from{opacity:0;transform:scale(.97)}
+  to{opacity:1;transform:scale(1)}
+}
+
+#actions{margin-top:12px;display:none}
 </style>
 </head>
 
 <body>
 
-<img src="logo.png" alt="Logo Gereja">
+<img src="logo.png">
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<button onclick="getVerse()">Ambil Ayat</button>
+<button onclick="prepareVerse()">Ambil Ayat</button>
 
+<div id="hint">👆 Tap layar untuk memilih ayat</div>
 <div id="result"></div>
 
 <div id="actions">
@@ -86,86 +110,64 @@
 </div>
 
 <script>
-/* =======================
-   AYAT KJV (INGGRIS)
-======================= */
-const versesKJV = [
-{ref:"Genesis 1:1", text:"In the beginning God created the heaven and the earth.", lang:"KJV"},
-{ref:"Genesis 50:20", text:"But as for you, ye thought evil against me; but God meant it unto good.", lang:"KJV"},
-{ref:"Exodus 14:14", text:"The LORD shall fight for you, and ye shall hold your peace.", lang:"KJV"},
-{ref:"Deuteronomy 31:6", text:"Be strong and of a good courage, fear not.", lang:"KJV"},
-{ref:"Joshua 1:9", text:"Be strong and of a good courage; be not afraid.", lang:"KJV"},
-{ref:"Psalm 23:1", text:"The LORD is my shepherd; I shall not want.", lang:"KJV"},
-{ref:"Psalm 27:1", text:"The LORD is my light and my salvation; whom shall I fear?", lang:"KJV"},
-{ref:"Psalm 46:1", text:"God is our refuge and strength, a very present help in trouble.", lang:"KJV"},
-{ref:"Psalm 119:105", text:"Thy word is a lamp unto my feet.", lang:"KJV"},
-{ref:"Isaiah 40:31", text:"They that wait upon the LORD shall renew their strength.", lang:"KJV"},
-{ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee.", lang:"KJV"},
-{ref:"Jeremiah 29:11", text:"For I know the thoughts that I think toward you, saith the LORD.", lang:"KJV"},
-{ref:"Matthew 6:33", text:"Seek ye first the kingdom of God.", lang:"KJV"},
-{ref:"Matthew 11:28", text:"Come unto me, all ye that labour.", lang:"KJV"},
-{ref:"John 3:16", text:"For God so loved the world.", lang:"KJV"},
-{ref:"John 14:27", text:"Peace I leave with you.", lang:"KJV"},
-{ref:"Romans 8:28", text:"All things work together for good.", lang:"KJV"},
-{ref:"Philippians 4:13", text:"I can do all things through Christ.", lang:"KJV"},
-{ref:"Hebrews 13:5", text:"I will never leave thee, nor forsake thee.", lang:"KJV"},
-{ref:"Revelation 21:4", text:"God shall wipe away all tears.", lang:"KJV"}
+/* ===== AYAT INGGRIS + INDONESIA (DITAMBAH) ===== */
+const verses = [
+{ref:"Psalm 23:1",text:"The LORD is my shepherd; I shall not want."},
+{ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
+
+{ref:"Isaiah 41:10",text:"Fear thou not; for I am with thee."},
+{ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
+
+{ref:"Jeremiah 29:11",text:"For I know the plans I have for you."},
+{ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
+
+{ref:"Matthew 11:28",text:"Come unto me, all ye that labour."},
+{ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
+
+{ref:"John 14:27",text:"Peace I leave with you."},
+{ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
+
+{ref:"Romans 8:28",text:"All things work together for good."},
+{ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
+
+{ref:"Philippians 4:13",text:"I can do all things through Christ."},
+{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung."},
+
+{ref:"Psalm 46:1",text:"God is our refuge and strength."},
+{ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan."},
+
+{ref:"Hebrews 13:5",text:"I will never leave thee."},
+{ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau."},
+
+{ref:"Revelation 21:4",text:"God shall wipe away all tears."},
+{ref:"Wahyu 21:4",text:"Allah akan menghapus segala air mata."}
 ];
 
-/* =======================
-   AYAT INDONESIA (PARAFRASE ROHANI)
-======================= */
-const versesID = [
-{ref:"Mazmur 23:1", text:"Tuhan adalah gembala yang setia; hidupku terpelihara dengan baik.", lang:"ID"},
-{ref:"Mazmur 27:1", text:"Tuhan adalah terang dan keselamatanku, aku tidak perlu takut.", lang:"ID"},
-{ref:"Mazmur 46:1", text:"Tuhan adalah tempat perlindungan dan kekuatan yang selalu hadir.", lang:"ID"},
-{ref:"Mazmur 119:105", text:"Firman Tuhan menuntun langkah hidupku setiap hari.", lang:"ID"},
-{ref:"Amsal 3:5", text:"Percayalah sepenuhnya kepada Tuhan dan jangan mengandalkan dirimu sendiri.", lang:"ID"},
-{ref:"Yesaya 40:31", text:"Orang yang berharap kepada Tuhan menerima kekuatan baru.", lang:"ID"},
-{ref:"Yesaya 41:10", text:"Jangan takut, Tuhan menyertai dan meneguhkanmu.", lang:"ID"},
-{ref:"Yeremia 29:11", text:"Rencana Tuhan penuh damai dan pengharapan untuk masa depan.", lang:"ID"},
-{ref:"Ratapan 3:23", text:"Kasih setia Tuhan selalu baru setiap pagi.", lang:"ID"},
-{ref:"Matius 6:33", text:"Utamakan Kerajaan Allah, maka Tuhan mencukupi keperluanmu.", lang:"ID"},
-{ref:"Matius 11:28", text:"Tuhan memberi kelegaan bagi jiwa yang letih dan berbeban.", lang:"ID"},
-{ref:"Yohanes 14:27", text:"Damai sejahtera Tuhan tinggal di hatimu.", lang:"ID"},
-{ref:"Roma 8:28", text:"Tuhan bekerja dalam segala hal untuk mendatangkan kebaikan.", lang:"ID"},
-{ref:"Filipi 4:13", text:"Bersama Kristus, aku dimampukan menghadapi segala keadaan.", lang:"ID"},
-{ref:"Ibrani 13:5", text:"Tuhan tidak pernah meninggalkan umat-Nya.", lang:"ID"},
-{ref:"Yakobus 1:5", text:"Tuhan memberi hikmat kepada siapa pun yang meminta.", lang:"ID"},
-{ref:"1 Petrus 5:7", text:"Serahkan segala kekhawatiranmu kepada Tuhan.", lang:"ID"},
-{ref:"1 Yohanes 4:4", text:"Kuasa Tuhan yang menyertaimu lebih besar dari segalanya.", lang:"ID"},
-{ref:"Wahyu 21:4", text:"Tuhan menghapus air mata dan memberi pengharapan kekal.", lang:"ID"}
-];
+let lastText="", lastName="", ready=false;
 
-/* === GABUNG & RANDOM === */
-const allVerses = [...versesKJV, ...versesID];
-
-let lastText="";
-let lastName="";
-
-function getVerse(){
-  const nameInput = document.getElementById("name");
-  if(!nameInput.value.trim()) return;
-
-  lastName = nameInput.value.trim();
-  const v = allVerses[Math.floor(Math.random()*allVerses.length)];
-
-  lastText = v.ref + "\n\n" + v.text;
-
-  document.getElementById("result").innerHTML =
-    `<strong>${v.ref}</strong><br><br>${v.text}<br><br><small><em>${v.lang}</em></small>`;
-
-  document.getElementById("actions").style.display="block";
+function prepareVerse(){
+  const n=document.getElementById("name").value.trim();
+  if(!n)return;
+  lastName=n;
+  ready=true;
+  document.getElementById("hint").style.display="block";
 }
 
-window.onload = () => {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name");
-  if(name){
-    document.getElementById("name").value = name;
-    getVerse();
-  }
-};
+document.body.addEventListener("click",()=>{
+  if(!ready)return;
+  ready=false;
+  document.getElementById("hint").style.display="none";
+  showVerse();
+});
+
+function showVerse(){
+  const v=verses[Math.floor(Math.random()*verses.length)];
+  lastText=v.ref+"\n\n"+v.text;
+  const r=document.getElementById("result");
+  r.style.display="block";
+  r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
+  document.getElementById("actions").style.display="block";
+}
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
@@ -173,26 +175,13 @@ function copyVerse(){
 }
 
 function shareVerse(){
-  const baseURL = window.location.origin + window.location.pathname;
-  const shareURL = `${baseURL}?name=${encodeURIComponent(lastName)}`;
-
-  const shareText =
-`Ayat Firman Tuhan untukmu hari ini 🙏
-
-${lastText}
-
-👉 Buka di:
-${shareURL}`;
-
+  const u=location.origin+location.pathname+"?name="+encodeURIComponent(lastName);
+  const t=`Ayat Firman Tuhan 🙏\n\n${lastText}\n\n${u}`;
   if(navigator.share){
-    navigator.share({
-      title:"BibleVerse GBT Plamongan Indah",
-      text: shareText,
-      url: shareURL
-    });
-  } else {
-    navigator.clipboard.writeText(shareText);
-    alert("Link ayat siap dibagikan");
+    navigator.share({title:"BibleVerse",text:t,url:u});
+  }else{
+    navigator.clipboard.writeText(t);
+    alert("Siap dibagikan");
   }
 }
 </script>
