@@ -29,7 +29,6 @@ em{
   text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
 
-/* INPUT (HANYA SAAT AWAL) */
 input{
   background:transparent;
   border:none;
@@ -42,7 +41,6 @@ input{
   text-align:center;
 }
 
-/* NAMA DISPLAY (SETELAH INPUT HILANG) */
 #displayName{
   display:none;
   margin-top:14px;
@@ -60,6 +58,7 @@ button{
   background:transparent;
   color:#fff;
   border-radius:6px;
+  cursor:pointer;
 }
 
 #result{
@@ -85,7 +84,7 @@ canvas{display:none}
 <input id="name" placeholder="Masukkan Nama Anda"><br>
 <div id="displayName"></div>
 
-<button onclick="startProcess(event)">Ambil Ayat</button>
+<button id="startBtn" onclick="startProcess(event)">Ambil Ayat</button>
 
 <div id="result"></div>
 
@@ -103,18 +102,19 @@ const verses=[
 {ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."}
 ];
 
-let shuffle,tap=false,lastText="",lastName="";
+let shuffle=null;
+let tap=false;
+let lastText="", lastName="";
 
 function startProcess(e){
   e.stopPropagation();
+
   lastName=name.value.trim();
-  if(!lastName)return;
+  if(!lastName) return;
 
-  // sembunyikan input & tombol
   name.style.display="none";
-  e.target.style.display="none";
+  startBtn.style.display="none";
 
-  // tampilkan nama versi display (tanpa underline)
   displayName.innerText=lastName;
   displayName.style.display="block";
 
@@ -128,14 +128,17 @@ function startProcess(e){
   },80);
 }
 
-document.body.onclick=()=>{
-  if(!tap)return;
+/* ⬇️ FIX UTAMA DI SINI */
+document.body.addEventListener("click",(e)=>{
+  if(!tap) return;
+  if(e.target.tagName==="BUTTON" || e.target.tagName==="INPUT") return;
+
   tap=false;
   clearInterval(shuffle);
   hint.style.display="none";
   actions.style.display="block";
   lastText=verses[0].ref+"\n\n"+verses[0].text;
-};
+});
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
@@ -165,11 +168,9 @@ function shareAsImage(){
       ctx.shadowColor="rgba(0,0,0,.6)";
       ctx.shadowBlur=6;
 
-      // NAMA (BESAR & BOLD)
       ctx.font="bold 56px Arial";
       ctx.fillText(lastName,120,820);
 
-      // AYAT (DITURUNKAN)
       ctx.font="46px Arial";
       wrapText(ctx,lastText,120,900,840,64);
 
