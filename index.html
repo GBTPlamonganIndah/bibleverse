@@ -102,32 +102,26 @@ button:hover{background:rgba(255,255,255,.15)}
 
 <div id="actions">
   <button onclick="copyVerse()">Salin Ayat</button>
-  <button onclick="shareVerse()">Share Ayat</button>
+  <button onclick="shareVerse()">Share WA / FB</button>
+  <button onclick="copyForInstagram()">Copy IG Story</button>
+  <button onclick="saveAsImage()">Simpan Gambar</button>
 </div>
 
 <div id="hint">Tap Layar Untuk Memilih Ayat</div>
 
+<canvas id="canvas" width="1080" height="1920" style="display:none"></canvas>
+
 <script>
 const verses = [
-{ref:"Psalm 23:1",text:"The LORD is my shepherd; I shall not want."},
 {ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
-{ref:"Isaiah 41:10",text:"Fear thou not; for I am with thee."},
 {ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
-{ref:"Jeremiah 29:11",text:"For I know the plans I have for you."},
 {ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
-{ref:"Matthew 11:28",text:"Come unto me, all ye that labour."},
 {ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
-{ref:"John 14:27",text:"Peace I leave with you."},
 {ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
-{ref:"Romans 8:28",text:"All things work together for good."},
 {ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
-{ref:"Philippians 4:13",text:"I can do all things through Christ."},
 {ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung."},
-{ref:"Psalm 46:1",text:"God is our refuge and strength."},
 {ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan."},
-{ref:"Hebrews 13:5",text:"I will never leave thee."},
 {ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau."},
-{ref:"Revelation 21:4",text:"God shall wipe away all tears."},
 {ref:"Wahyu 21:4",text:"Allah akan menghapus segala air mata."}
 ];
 
@@ -136,8 +130,7 @@ let tapEnabled=false;
 let lastText="", lastName="";
 
 function startProcess(e){
-  e.stopPropagation(); // ⬅️ PENTING: cegah klik body
-
+  e.stopPropagation();
   const n=document.getElementById("name").value.trim();
   if(!n)return;
 
@@ -176,14 +169,62 @@ function copyVerse(){
 }
 
 function shareVerse(){
-  const u=location.origin+location.pathname+"?name="+encodeURIComponent(lastName);
-  const t=`Ayat Firman Tuhan\n\n${lastText}\n\n${u}`;
+  const u=location.origin+location.pathname;
+  const t=`📖 Ayat Firman Tuhan\n\n${lastText}\n\n${u}`;
   if(navigator.share){
     navigator.share({title:"BibleVerse",text:t,url:u});
   }else{
     navigator.clipboard.writeText(t);
-    alert("Siap dibagikan");
+    alert("Teks siap dibagikan");
   }
+}
+
+/* ===== INSTAGRAM FRIENDLY ===== */
+function copyForInstagram(){
+  const t=`${lastText}\n\n— BibleVerse GBT Plamongan Indah`;
+  navigator.clipboard.writeText(t);
+  alert("Teks siap ditempel ke Instagram Story");
+}
+
+function saveAsImage(){
+  const canvas=document.getElementById("canvas");
+  const ctx=canvas.getContext("2d");
+
+  const bg=new Image();
+  bg.src="background.jpeg";
+  bg.onload=()=>{
+    ctx.drawImage(bg,0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle="#fff";
+    ctx.textAlign="center";
+    ctx.font="48px Arial";
+    wrapText(ctx,lastText,canvas.width/2,800,900,64);
+
+    ctx.font="italic 32px Arial";
+    ctx.fillText("BibleVerse GBT Plamongan Indah",canvas.width/2,1500);
+
+    const link=document.createElement("a");
+    link.download="ayat-firman.png";
+    link.href=canvas.toDataURL();
+    link.click();
+  }
+}
+
+function wrapText(ctx,text,x,y,maxWidth,lineHeight){
+  const words=text.split(" ");
+  let line="";
+  for(let i=0;i<words.length;i++){
+    const testLine=line+words[i]+" ";
+    const w=ctx.measureText(testLine).width;
+    if(w>maxWidth && i>0){
+      ctx.fillText(line,x,y);
+      line=words[i]+" ";
+      y+=lineHeight;
+    }else{
+      line=testLine;
+    }
+  }
+  ctx.fillText(line,x,y);
 }
 </script>
 
