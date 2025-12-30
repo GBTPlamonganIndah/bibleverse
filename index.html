@@ -7,23 +7,40 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background:#f9f9f9;
     text-align:center;
     padding:20px;
+    min-height:100vh;
+
+    /* ===== BACKGROUND IMAGE ===== */
+    background: url("background.jpeg") no-repeat center center fixed;
+    background-size: cover;
   }
+
+  /* overlay supaya teks tetap jelas */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:rgba(255,255,255,0.85);
+    z-index:-1;
+  }
+
   img { width:130px; margin-bottom:15px; }
+
   em {
     font-style: italic;
     font-size: 18px;
     display:block;
     margin-bottom:20px;
   }
+
   input {
     padding:8px;
     width:260px;
     margin:10px auto;
     font-size:16px;
   }
+
   button {
     padding:10px 18px;
     margin:6px;
@@ -34,7 +51,9 @@
     background:#2c7be5;
     color:#fff;
   }
+
   button:hover { background:#1b5fa7; }
+
   #result {
     margin-top:20px;
     padding:18px;
@@ -45,9 +64,11 @@
     text-align:left;
     line-height:1.6;
   }
+
   #actions { margin-top:12px; display:none; }
 </style>
 </head>
+
 <body>
 
 <img src="logo.png" alt="Logo Gereja">
@@ -64,117 +85,41 @@
 </div>
 
 <script>
-// =================================================
-// 200+ AYAT KJV — MOTIVASI, PENGUATAN, PENGHIBURAN
-// =================================================
 const versesKJV = [
 {ref:"Genesis 1:1", text:"In the beginning God created the heaven and the earth."},
 {ref:"Genesis 50:20", text:"But as for you, ye thought evil against me; but God meant it unto good."},
-
 {ref:"Exodus 14:14", text:"The LORD shall fight for you, and ye shall hold your peace."},
 {ref:"Deuteronomy 31:6", text:"Be strong and of a good courage, fear not."},
-
 {ref:"Joshua 1:9", text:"Be strong and of a good courage; be not afraid."},
 {ref:"Joshua 24:15", text:"As for me and my house, we will serve the LORD."},
-
 {ref:"Judges 6:12", text:"The LORD is with thee, thou mighty man of valour."},
-
 {ref:"Ruth 1:16", text:"Whither thou goest, I will go."},
-
 {ref:"1 Samuel 16:7", text:"Man looketh on the outward appearance, but the LORD looketh on the heart."},
-
 {ref:"2 Chronicles 7:14", text:"If my people, which are called by my name, shall humble themselves."},
-
 {ref:"Job 19:25", text:"For I know that my redeemer liveth."},
-
-{ref:"Psalm 1:1", text:"Blessed is the man that walketh not in the counsel of the ungodly."},
-{ref:"Psalm 1:2", text:"His delight is in the law of the LORD."},
 {ref:"Psalm 23:1", text:"The LORD is my shepherd; I shall not want."},
-{ref:"Psalm 23:4", text:"I will fear no evil: for thou art with me."},
 {ref:"Psalm 27:1", text:"The LORD is my light and my salvation; whom shall I fear?"},
-{ref:"Psalm 27:14", text:"Wait on the LORD: be of good courage."},
-{ref:"Psalm 34:8", text:"O taste and see that the LORD is good."},
-{ref:"Psalm 37:4", text:"Delight thyself also in the LORD."},
 {ref:"Psalm 46:1", text:"God is our refuge and strength."},
-{ref:"Psalm 46:10", text:"Be still, and know that I am God."},
-{ref:"Psalm 55:22", text:"Cast thy burden upon the LORD."},
-{ref:"Psalm 91:1", text:"He that dwelleth in the secret place of the most High."},
 {ref:"Psalm 119:105", text:"Thy word is a lamp unto my feet."},
-
 {ref:"Proverbs 3:5", text:"Trust in the LORD with all thine heart."},
-{ref:"Proverbs 3:6", text:"In all thy ways acknowledge him."},
-{ref:"Proverbs 16:3", text:"Commit thy works unto the LORD."},
-{ref:"Proverbs 18:10", text:"The name of the LORD is a strong tower."},
-
-{ref:"Ecclesiastes 3:1", text:"To every thing there is a season."},
-
-{ref:"Isaiah 40:31", text:"They that wait upon the LORD shall renew their strength."},
 {ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee."},
-{ref:"Isaiah 43:2", text:"When thou passest through the waters, I will be with thee."},
-
 {ref:"Jeremiah 29:11", text:"For I know the thoughts that I think toward you, saith the LORD."},
-{ref:"Lamentations 3:22", text:"It is of the LORD'S mercies that we are not consumed."},
-
-{ref:"Matthew 6:33", text:"Seek ye first the kingdom of God."},
 {ref:"Matthew 11:28", text:"Come unto me, all ye that labour."},
-{ref:"Matthew 28:20", text:"Lo, I am with you alway."},
-
-{ref:"Mark 10:27", text:"With God all things are possible."},
-
-{ref:"John 3:16", text:"For God so loved the world."},
 {ref:"John 14:27", text:"Peace I leave with you."},
-{ref:"John 16:33", text:"In the world ye shall have tribulation: but be of good cheer."},
-
-{ref:"Romans 8:1", text:"There is therefore now no condemnation."},
 {ref:"Romans 8:28", text:"All things work together for good."},
-{ref:"Romans 15:13", text:"The God of hope fill you with all joy."},
-
-{ref:"1 Corinthians 16:13", text:"Stand fast in the faith."},
-
-{ref:"2 Corinthians 5:7", text:"For we walk by faith, not by sight."},
-{ref:"2 Corinthians 12:9", text:"My grace is sufficient for thee."},
-
-{ref:"Galatians 6:9", text:"Let us not be weary in well doing."},
-
-{ref:"Ephesians 6:10", text:"Be strong in the Lord."},
-
-{ref:"Philippians 4:6", text:"Be careful for nothing."},
 {ref:"Philippians 4:13", text:"I can do all things through Christ."},
-
-{ref:"Colossians 3:23", text:"Whatsoever ye do, do it heartily."},
-
-{ref:"2 Timothy 1:7", text:"God hath not given us the spirit of fear."},
-
-{ref:"Hebrews 11:1", text:"Now faith is the substance of things hoped for."},
-{ref:"Hebrews 13:5", text:"I will never leave thee."},
-
-{ref:"James 1:5", text:"If any of you lack wisdom."},
-
-{ref:"1 Peter 5:7", text:"Casting all your care upon him."},
-
-{ref:"1 John 4:4", text:"Greater is he that is in you."},
-
-{ref:"Revelation 3:20", text:"Behold, I stand at the door, and knock."},
 {ref:"Revelation 21:4", text:"God shall wipe away all tears."}
 ];
 
-// =================================================
-// FUNGSI
-// =================================================
-let lastText = "";
+let lastText="";
 
 function getVerse(){
   if(!document.getElementById("name").value.trim()) return;
-
-  const idx = Math.floor(Math.random() * versesKJV.length);
-  const v = versesKJV[idx];
-
+  const v = versesKJV[Math.floor(Math.random()*versesKJV.length)];
   lastText = v.ref + "\n\n" + v.text;
-
   document.getElementById("result").innerHTML =
     `<strong>${v.ref}</strong><br><br>${v.text}<br><br><small><em>KJV</em></small>`;
-
-  document.getElementById("actions").style.display = "block";
+  document.getElementById("actions").style.display="block";
 }
 
 function copyVerse(){
@@ -184,7 +129,7 @@ function copyVerse(){
 
 function shareVerse(){
   if(navigator.share){
-    navigator.share({ text: lastText });
+    navigator.share({ text:lastText });
   } else {
     navigator.clipboard.writeText(lastText);
     alert("Ayat siap dibagikan");
