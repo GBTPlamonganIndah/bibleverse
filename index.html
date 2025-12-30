@@ -50,7 +50,7 @@ input{
   font-size:16px;
 }
 
-/* === BUTTON OUTLINE PUTIH, NO FILL === */
+/* BUTTON OUTLINE PUTIH */
 button{
   padding:10px 18px;
   margin:6px;
@@ -149,23 +149,23 @@ function startProcess(){
   const r=document.getElementById("result");
   r.style.display="block";
 
+  /* === PERBAIKAN UTAMA: hint muncul LANGSUNG === */
+  document.getElementById("hint").style.display="block";
+  finalReady=true;
+
   shuffleInterval=setInterval(()=>{
     const v=verses[Math.floor(Math.random()*verses.length)];
     r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   },80);
-
-  setTimeout(()=>{
-    clearInterval(shuffleInterval);
-    document.getElementById("actions").style.display="block";
-    document.getElementById("hint").style.display="block";
-    finalReady=true;
-  },1200);
 }
 
 document.body.addEventListener("click",()=>{
   if(!finalReady)return;
+
   finalReady=false;
+  clearInterval(shuffleInterval);
   document.getElementById("hint").style.display="none";
+  document.getElementById("actions").style.display="block";
 
   const v=verses[Math.floor(Math.random()*verses.length)];
   lastText=v.ref+"\n\n"+v.text;
