@@ -29,6 +29,7 @@ em{
   text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
 
+/* INPUT (HANYA SAAT AWAL) */
 input{
   background:transparent;
   border:none;
@@ -39,6 +40,16 @@ input{
   padding:8px 4px;
   font-size:16px;
   text-align:center;
+}
+
+/* NAMA DISPLAY (SETELAH INPUT HILANG) */
+#displayName{
+  display:none;
+  margin-top:14px;
+  font-size:26px;
+  font-weight:bold;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
 
 button{
@@ -72,6 +83,8 @@ canvas{display:none}
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input id="name" placeholder="Masukkan Nama Anda"><br>
+<div id="displayName"></div>
+
 <button onclick="startProcess(event)">Ambil Ayat</button>
 
 <div id="result"></div>
@@ -96,6 +109,14 @@ function startProcess(e){
   e.stopPropagation();
   lastName=name.value.trim();
   if(!lastName)return;
+
+  // sembunyikan input & tombol
+  name.style.display="none";
+  e.target.style.display="none";
+
+  // tampilkan nama versi display (tanpa underline)
+  displayName.innerText=lastName;
+  displayName.style.display="block";
 
   result.style.display="block";
   hint.style.display="block";
