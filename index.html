@@ -1,19 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ===== META SHARE ===== -->
 <meta property="og:title" content="BibleVerse GBT Plamongan Indah">
 <meta property="og:description" content="Firman-Nya lah pelita bagi ku setiap hari">
 <meta property="og:image" content="https://gbtplamonganindah.github.io/bibleverse/background.jpeg">
-<meta property="og:url" content="https://gbtplamonganindah.github.io/bibleverse/">
 <meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
 
 <title>BibleVerse GBT Plamongan Indah</title>
 
@@ -23,29 +17,18 @@ body{
   text-align:center;
   padding:20px;
   min-height:100vh;
-  background:url("background.jpeg") no-repeat center center fixed;
-  background-size:cover;
+  background:url("background.jpeg") center/cover no-repeat fixed;
 }
 
 img{width:130px;margin-bottom:15px}
 
 em{
-  font-style:italic;
-  font-size:18px;
+  color:#fff;
   display:block;
   margin-bottom:20px;
-  color:#fff;
   text-shadow:0 2px 6px rgba(0,0,0,.6);
-  opacity:0;
-  animation:fadeText 2s ease forwards;
 }
 
-@keyframes fadeText{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-/* ===== INPUT (FINAL – UNDERLINE ONLY) ===== */
 input{
   background:transparent;
   border:none;
@@ -54,60 +37,42 @@ input{
   color:#fff;
   width:260px;
   padding:8px 4px;
-  margin:10px auto;
   font-size:16px;
   text-align:center;
 }
 
-input::placeholder{
-  color:rgba(255,255,255,.7);
-}
-/* ===== END INPUT ===== */
-
 button{
+  margin-top:10px;
   padding:10px 18px;
-  margin:6px;
   font-size:15px;
-  cursor:pointer;
   border:2px solid #fff;
-  border-radius:6px;
   background:transparent;
   color:#fff;
-}
-
-button:hover{background:rgba(255,255,255,.15)}
-
-#hint{
-  margin-top:14px;
-  color:#fff;
-  font-size:15px;
-  display:none;
-  opacity:.9;
+  border-radius:6px;
 }
 
 #result{
-  margin-top:20px;
-  line-height:1.6;
-  color:#fff;
-  text-shadow:0 2px 6px rgba(0,0,0,.6);
   display:none;
-  background:transparent;
-  border:none;
-  box-shadow:none;
+  margin-top:20px;
+  color:#fff;
   text-align:left;
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
 
-#actions{margin-top:12px;display:none}
+#actions{display:none;margin-top:12px}
+#hint{color:#fff;margin-top:14px;display:none}
+
+canvas{display:none}
 </style>
 </head>
 
 <body>
 
-<img src="logo.png" id="logo">
+<img src="logo.png">
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
-<input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<button id="startBtn" onclick="startProcess(event)">Ambil Ayat</button>
+<input id="name" placeholder="Masukkan Nama Anda"><br>
+<button onclick="startProcess(event)">Ambil Ayat</button>
 
 <div id="result"></div>
 
@@ -116,123 +81,95 @@ button:hover{background:rgba(255,255,255,.15)}
   <button onclick="shareAsImage()">Bagikan Ayat</button>
 </div>
 
-<div id="hint">Tap Layar Untuk Memilih Ayat</div>
+<div id="hint">Tap layar untuk berhenti</div>
 
-<canvas id="canvas" width="1080" height="1920" style="display:none"></canvas>
+<canvas id="canvas" width="1080" height="1920"></canvas>
 
 <script>
 const verses=[
-{ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
-{ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
-{ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
-{ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
-{ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
-{ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."},
-{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung oleh Dia yang memberi kekuatan kepadaku."}
+{ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."}
 ];
 
-let shuffleInterval=null;
-let tapEnabled=false;
-let lastText="", lastName="";
+let shuffle,tap=false,lastText="",lastName="";
 
 function startProcess(e){
   e.stopPropagation();
-  const n=document.getElementById("name").value.trim();
-  if(!n)return;
+  lastName=name.value.trim();
+  if(!lastName)return;
 
-  lastName=n;
-  const r=document.getElementById("result");
-  r.style.display="block";
+  result.style.display="block";
+  hint.style.display="block";
+  tap=true;
 
-  document.getElementById("hint").style.display="block";
-  document.getElementById("actions").style.display="none";
-  document.getElementById("startBtn").style.display="none";
-  tapEnabled=true;
-
-  clearInterval(shuffleInterval);
-  shuffleInterval=setInterval(()=>{
-    const v=verses[Math.floor(Math.random()*verses.length)];
-    r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
+  shuffle=setInterval(()=>{
+    const v=verses[0];
+    result.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   },80);
 }
 
-document.body.addEventListener("click",()=>{
-  if(!tapEnabled)return;
-
-  tapEnabled=false;
-  clearInterval(shuffleInterval);
-  document.getElementById("hint").style.display="none";
-  document.getElementById("actions").style.display="block";
-
-  const v=verses[Math.floor(Math.random()*verses.length)];
-  lastText=v.ref+"\n\n"+v.text;
-  document.getElementById("result").innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
-});
+document.body.onclick=()=>{
+  if(!tap)return;
+  tap=false;
+  clearInterval(shuffle);
+  hint.style.display="none";
+  actions.style.display="block";
+  lastText=verses[0].ref+"\n\n"+verses[0].text;
+};
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
 }
 
 function shareAsImage(){
-  const canvas=document.getElementById("canvas");
-  const ctx=canvas.getContext("2d");
+  const c=canvas,ctx=c.getContext("2d");
 
   const bg=new Image();
   bg.src="background.jpeg";
 
-  const logoImg=new Image();
-  logoImg.src="logo.png";
+  const logo=new Image();
+  logo.src="logo.png";
 
   bg.onload=()=>{
-    ctx.drawImage(bg,0,0,1080,1920);
+    const iw=bg.width,ih=bg.height;
+    const cw=1080,ch=1920;
+    const r=Math.max(cw/iw,ch/ih);
+    const nw=iw*r,nh=ih*r;
+    ctx.drawImage(bg,(cw-nw)/2,(ch-nh)/2,nw,nh);
 
-    logoImg.onload=()=>{
-      const logoSize=180;
-      const logoX=(1080-logoSize)/2;
-      const logoY=420;
-      ctx.drawImage(logoImg,logoX,logoY,logoSize,logoSize);
+    logo.onload=()=>{
+      ctx.drawImage(logo,(cw-180)/2,420,180,180);
 
       ctx.fillStyle="#fff";
       ctx.textAlign="left";
       ctx.shadowColor="rgba(0,0,0,.6)";
       ctx.shadowBlur=6;
 
-      ctx.font="bold 40px Arial";
-      ctx.fillText(lastName,120,680);
+      // NAMA (BESAR & BOLD)
+      ctx.font="bold 56px Arial";
+      ctx.fillText(lastName,120,820);
 
-      ctx.font="48px Arial";
-      wrapText(ctx,lastText,120,760,840,64);
+      // AYAT (DITURUNKAN)
+      ctx.font="46px Arial";
+      wrapText(ctx,lastText,120,900,840,64);
 
-      canvas.toBlob(blob=>{
-        const file=new File([blob],"ayat.png",{type:"image/png"});
-        navigator.share
-          ? navigator.share({files:[file]})
-          : download(blob);
+      c.toBlob(b=>{
+        const f=new File([b],"ayat.png",{type:"image/png"});
+        navigator.share({files:[f]});
       });
     };
   };
 }
 
-function download(blob){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="ayat.png";
-  a.click();
-}
-
-function wrapText(ctx,text,x,y,maxWidth,lineHeight){
-  const words=text.split(" ");
+function wrapText(ctx,text,x,y,w,h){
   let line="";
-  for(let i=0;i<words.length;i++){
-    const testLine=line+words[i]+" ";
-    if(ctx.measureText(testLine).width>maxWidth){
+  text.split(" ").forEach(word=>{
+    const test=line+word+" ";
+    if(ctx.measureText(test).width>w){
       ctx.fillText(line,x,y);
-      line=words[i]+" ";
-      y+=lineHeight;
-    }else{
-      line=testLine;
-    }
-  }
+      line=word+" ";
+      y+=h;
+    }else line=test;
+  });
   ctx.fillText(line,x,y);
 }
 </script>
