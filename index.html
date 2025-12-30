@@ -76,13 +76,10 @@ button:hover{background:rgba(255,255,255,.15)}
 
 #result{
   margin-top:20px;
-  padding:18px;
-  background:#fff;
-  border-radius:8px;
-  max-width:680px;
-  margin:auto;
   text-align:left;
   line-height:1.6;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.6);
   display:none;
 }
 
@@ -92,11 +89,11 @@ button:hover{background:rgba(255,255,255,.15)}
 
 <body>
 
-<img src="logo.png">
+<img src="logo.png" id="logo">
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<button onclick="startProcess(event)">Ambil Ayat</button>
+<button id="startBtn" onclick="startProcess(event)">Ambil Ayat</button>
 
 <div id="result"></div>
 
@@ -138,6 +135,7 @@ function startProcess(e){
 
   document.getElementById("hint").style.display="block";
   document.getElementById("actions").style.display="none";
+  document.getElementById("startBtn").style.display="none"; // hilangkan tombol ambil ayat
   tapEnabled=true;
 
   clearInterval(shuffleInterval);
@@ -173,28 +171,48 @@ function shareAsImage(){
 
   const bg=new Image();
   bg.src="background.jpeg";
+  const logo=document.getElementById("logo");
+  const nameText=lastName;
+
   bg.onload=()=>{
     ctx.drawImage(bg,0,0,canvas.width,canvas.height);
 
-    ctx.fillStyle="#fff";
-    ctx.textAlign="center";
-    ctx.font="48px Arial";
-    wrapText(ctx,lastText,canvas.width/2,800,900,64);
+    // logo di kiri atas
+    const logoImg=new Image();
+    logoImg.src=logo.src;
+    logoImg.onload=()=>{
+      ctx.drawImage(logoImg,50,50,150,150);
 
-    ctx.font="italic 32px Arial";
-    ctx.fillText("BibleVerse GBT Plamongan Indah",canvas.width/2,1500);
+      // nama di kiri bawah logo
+      ctx.fillStyle="#fff";
+      ctx.font="36px Arial";
+      ctx.textAlign="left";
+      ctx.shadowColor="rgba(0,0,0,0.7)";
+      ctx.shadowOffsetX=2;
+      ctx.shadowOffsetY=2;
+      ctx.shadowBlur=4;
+      ctx.fillText(nameText,50,220);
 
-    canvas.toBlob((blob)=>{
-      const file = new File([blob],"ayat.png",{type:"image/png"});
-      if(navigator.canShare && navigator.canShare({files:[file]})){
-        navigator.share({files:[file],title:"BibleVerse",text:"Ayat Firman Tuhan"});
-      }else{
-        const link=document.createElement("a");
-        link.href=URL.createObjectURL(blob);
-        link.download="ayat-firman.png";
-        link.click();
-      }
-    });
+      // ayat rata kiri di bawah nama
+      ctx.font="48px Arial";
+      wrapText(ctx,lastText,50,280,980,64);
+
+      // footer
+      ctx.font="italic 32px Arial";
+      ctx.fillText("BibleVerse GBT Plamongan Indah",50,1800);
+
+      canvas.toBlob((blob)=>{
+        const file = new File([blob],"ayat.png",{type:"image/png"});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          navigator.share({files:[file],title:"BibleVerse",text:"Ayat Firman Tuhan"});
+        }else{
+          const link=document.createElement("a");
+          link.href=URL.createObjectURL(blob);
+          link.download="ayat-firman.png";
+          link.click();
+        }
+      });
+    };
   };
 }
 
