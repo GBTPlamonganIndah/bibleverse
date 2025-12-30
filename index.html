@@ -72,6 +72,13 @@ button{
 #actions{display:none;margin-top:12px}
 #hint{color:#fff;margin-top:14px;display:none}
 
+#tapLayer{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10;
+}
+
 canvas{display:none}
 </style>
 </head>
@@ -84,7 +91,7 @@ canvas{display:none}
 <input id="name" placeholder="Masukkan Nama Anda"><br>
 <div id="displayName"></div>
 
-<button id="startBtn" onclick="startProcess(event)">Ambil Ayat</button>
+<button id="startBtn">Ambil Ayat</button>
 
 <div id="result"></div>
 
@@ -95,6 +102,8 @@ canvas{display:none}
 
 <div id="hint">Tap layar untuk berhenti</div>
 
+<div id="tapLayer"></div>
+
 <canvas id="canvas" width="1080" height="1920"></canvas>
 
 <script>
@@ -103,12 +112,9 @@ const verses=[
 ];
 
 let shuffle=null;
-let tap=false;
 let lastText="", lastName="";
 
-function startProcess(e){
-  e.stopPropagation();
-
+startBtn.onclick=()=>{
   lastName=name.value.trim();
   if(!lastName) return;
 
@@ -120,25 +126,21 @@ function startProcess(e){
 
   result.style.display="block";
   hint.style.display="block";
-  tap=true;
+  tapLayer.style.display="block";
 
   shuffle=setInterval(()=>{
     const v=verses[0];
     result.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
   },80);
-}
+};
 
-/* ⬇️ FIX UTAMA DI SINI */
-document.body.addEventListener("click",(e)=>{
-  if(!tap) return;
-  if(e.target.tagName==="BUTTON" || e.target.tagName==="INPUT") return;
-
-  tap=false;
+tapLayer.onclick=()=>{
   clearInterval(shuffle);
+  tapLayer.style.display="none";
   hint.style.display="none";
   actions.style.display="block";
   lastText=verses[0].ref+"\n\n"+verses[0].text;
-});
+};
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
@@ -176,7 +178,7 @@ function shareAsImage(){
 
       c.toBlob(b=>{
         const f=new File([b],"ayat.png",{type:"image/png"});
-        navigator.share({files:[f]});
+        navigator.share && navigator.share({files:[f]});
       });
     };
   };
