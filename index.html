@@ -22,6 +22,12 @@ const tapArea = document.getElementById("tapArea");
 const actions = document.getElementById("actions");
 const canvas = document.getElementById("canvas");
 
+// kalau script dipanggil tapi elemen gak ada → amankan
+if(!name || !startBtn || !displayName || !result || !hint || !tapArea || !actions || !canvas){
+  console.warn("Elemen HTML belum lengkap");
+  return;
+}
+
 startBtn.onclick = () => {
   lastName = name.value.trim();
   if(!lastName) return;
@@ -36,7 +42,6 @@ startBtn.onclick = () => {
   hint.style.display="block";
   tapArea.style.display="block";
 
-  // tampilkan pertama kali
   result.innerHTML=`<strong>${verse.ref}</strong><br><br>${verse.text}`;
 
   shuffle=setInterval(()=>{
@@ -57,7 +62,11 @@ tapArea.onclick = () => {
 };
 
 function copyVerse(){
-  navigator.clipboard.writeText(lastText);
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(lastText);
+  } else {
+    alert("Clipboard tidak didukung di device ini");
+  }
 }
 
 function loadImage(src){
@@ -65,6 +74,7 @@ function loadImage(src){
     const img=new Image();
     img.src=src;
     img.onload=()=>res(img);
+    img.onerror=()=>res(null);  // anti crash kalau gambar hilang
   });
 }
 
@@ -79,16 +89,23 @@ async function shareAsImage(){
   const bg = await loadImage("background.jpeg");
   const logo = await loadImage("logo.png");
 
-  const r = Math.max(1080/bg.width,1920/bg.height);
-  ctx.drawImage(
-    bg,
-    (1080-bg.width*r)/2,
-    (1920-bg.height*r)/2,
-    bg.width*r,
-    bg.height*r
-  );
+  if(bg){
+    const r = Math.max(1080/bg.width,1920/bg.height);
+    ctx.drawImage(
+      bg,
+      (1080-bg.width*r)/2,
+      (1920-bg.height*r)/2,
+      bg.width*r,
+      bg.height*r
+    );
+  } else {
+    ctx.fillStyle="#000";
+    ctx.fillRect(0,0,1080,1920);
+  }
 
-  ctx.drawImage(logo,(1080-180)/2,420,180,180);
+  if(logo){
+    ctx.drawImage(logo,(1080-180)/2,420,180,180);
+  }
 
   ctx.fillStyle="#fff";
   ctx.textAlign="left";
@@ -105,24 +122,29 @@ async function shareAsImage(){
     if(navigator.share){
       navigator.share({
         files:[new File([b],"ayat.png",{type:"image/png"})]
-      });
+      }).catch(()=>{});
+    } else {
+      alert("Fitur share tidak didukung di browser ini");
     }
   });
 }
 
 function wrapText(ctx,text,x,y,w,h){
-  let line="";
-  text.split(" ").forEach(word=>{
-    const test=line+word+" ";
-    if(ctx.measureText(test).width>w){
-      ctx.fillText(line,x,y);
-      line=word+" ";
-      y+=h;
-    }else{
-      line=test;
-    }
+  text.split("\n").forEach(block=>{
+    let line="";
+    block.split(" ").forEach(word=>{
+      const test=line+word+" ";
+      if(ctx.measureText(test).width>w){
+        ctx.fillText(line,x,y);
+        line=word+" ";
+        y+=h;
+      }else{
+        line=test;
+      }
+    });
+    ctx.fillText(line,x,y);
+    y+=h;
   });
-  ctx.fillText(line,x,y);
 }
 
 window.copyVerse = copyVerse;
@@ -130,3 +152,4 @@ window.shareAsImage = shareAsImage;
 
 });
     </script>
+    
