@@ -10,19 +10,20 @@
     text-align:center;
     padding:20px;
     min-height:100vh;
-
-    /* ===== BACKGROUND IMAGE (LANGSUNG, TANPA LAYER PUTIH) ===== */
     background: url("background.jpeg") no-repeat center center fixed;
     background-size: cover;
   }
 
   img { width:130px; margin-bottom:15px; }
 
+  /* === TEKS FIRMAN JADI PUTIH === */
   em {
     font-style: italic;
     font-size: 18px;
     display:block;
     margin-bottom:20px;
+    color:#ffffff;
+    text-shadow:0 2px 6px rgba(0,0,0,0.6);
   }
 
   input {
@@ -83,18 +84,9 @@ const versesKJV = [
 {ref:"Deuteronomy 31:6", text:"Be strong and of a good courage, fear not."},
 {ref:"Joshua 1:9", text:"Be strong and of a good courage; be not afraid."},
 {ref:"Joshua 24:15", text:"As for me and my house, we will serve the LORD."},
-{ref:"Judges 6:12", text:"The LORD is with thee, thou mighty man of valour."},
-{ref:"Ruth 1:16", text:"Whither thou goest, I will go."},
-{ref:"1 Samuel 16:7", text:"Man looketh on the outward appearance, but the LORD looketh on the heart."},
-{ref:"2 Chronicles 7:14", text:"If my people, which are called by my name, shall humble themselves."},
-{ref:"Job 19:25", text:"For I know that my redeemer liveth."},
 {ref:"Psalm 23:1", text:"The LORD is my shepherd; I shall not want."},
-{ref:"Psalm 27:1", text:"The LORD is my light and my salvation; whom shall I fear?"},
-{ref:"Psalm 46:1", text:"God is our refuge and strength."},
 {ref:"Psalm 119:105", text:"Thy word is a lamp unto my feet."},
-{ref:"Proverbs 3:5", text:"Trust in the LORD with all thine heart."},
 {ref:"Isaiah 41:10", text:"Fear thou not; for I am with thee."},
-{ref:"Jeremiah 29:11", text:"For I know the thoughts that I think toward you, saith the LORD."},
 {ref:"Matthew 11:28", text:"Come unto me, all ye that labour."},
 {ref:"John 14:27", text:"Peace I leave with you."},
 {ref:"Romans 8:28", text:"All things work together for good."},
@@ -103,27 +95,60 @@ const versesKJV = [
 ];
 
 let lastText="";
+let lastName="";
 
 function getVerse(){
-  if(!document.getElementById("name").value.trim()) return;
+  const nameInput = document.getElementById("name");
+  if(!nameInput.value.trim()) return;
+
+  lastName = nameInput.value.trim();
   const v = versesKJV[Math.floor(Math.random()*versesKJV.length)];
+
   lastText = v.ref + "\n\n" + v.text;
+
   document.getElementById("result").innerHTML =
     `<strong>${v.ref}</strong><br><br>${v.text}<br><br><small><em>KJV</em></small>`;
+
   document.getElementById("actions").style.display="block";
 }
+
+/* === AUTO AMBIL AYAT DARI LINK ?name= === */
+window.onload = () => {
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name");
+  if(name){
+    document.getElementById("name").value = name;
+    getVerse();
+  }
+};
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
   alert("Ayat berhasil disalin");
 }
 
+/* === SHARE PAKAI LINK (WA / IG / STORY) === */
 function shareVerse(){
+  const baseURL = window.location.origin + window.location.pathname;
+  const shareURL = `${baseURL}?name=${encodeURIComponent(lastName)}`;
+
+  const shareText =
+`Ayat Firman Tuhan untukmu hari ini 🙏
+
+${lastText}
+
+👉 Buka di:
+${shareURL}`;
+
   if(navigator.share){
-    navigator.share({ text:lastText });
+    navigator.share({
+      title:"Ayat Firman Tuhan",
+      text: shareText,
+      url: shareURL
+    });
   } else {
-    navigator.clipboard.writeText(lastText);
-    alert("Ayat siap dibagikan");
+    navigator.clipboard.writeText(shareText);
+    alert("Link ayat siap dibagikan ke Story / WhatsApp / Instagram");
   }
 }
 </script>
