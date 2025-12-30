@@ -102,9 +102,7 @@ button:hover{background:rgba(255,255,255,.15)}
 
 <div id="actions">
   <button onclick="copyVerse()">Salin Ayat</button>
-  <button onclick="shareVerse()">Share WA / FB</button>
-  <button onclick="copyForInstagram()">Copy IG Story</button>
-  <button onclick="saveAsImage()">Simpan Gambar</button>
+  <button onclick="shareAsImage()">Bagikan Ayat</button>
 </div>
 
 <div id="hint">Tap Layar Untuk Memilih Ayat</div>
@@ -118,11 +116,11 @@ const verses = [
 {ref:"Yeremia 29:11",text:"Aku mengetahui rancangan-rancangan damai sejahtera."},
 {ref:"Matius 11:28",text:"Marilah kepada-Ku semua yang letih lesu."},
 {ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
-{ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
-{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung."},
-{ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan."},
-{ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau."},
-{ref:"Wahyu 21:4",text:"Allah akan menghapus segala air mata."}
+{ref:"Roma 8:28",text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia, yaitu bagi mereka yang terpanggil sesuai dengan rencana-Nya."},
+{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung oleh Dia yang memberi kekuatan kepadaku."},
+{ref:"Mazmur 46:1",text:"Allah itu tempat perlindungan dan kekuatan, sebagai penolong dalam kesesakan sangat terbukti."},
+{ref:"Ibrani 13:5",text:"Aku sekali-kali tidak akan meninggalkan engkau dan tidak akan membiarkan engkau terombang-ambing."},
+{ref:"Wahyu 21:4",text:"Dan Ia akan menghapus segala air mata dari mata mereka, dan maut tidak akan ada lagi; tidak akan ada lagi perkabungan, ratap tangis atau dukacita."}
 ];
 
 let shuffleInterval=null;
@@ -159,34 +157,17 @@ document.body.addEventListener("click",()=>{
 
   const v=verses[Math.floor(Math.random()*verses.length)];
   lastText=v.ref+"\n\n"+v.text;
-  document.getElementById("result").innerHTML=
-    `<strong>${v.ref}</strong><br><br>${v.text}`;
+  document.getElementById("result").innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
 });
 
+/* SALIN TEKS */
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
   alert("Ayat berhasil disalin");
 }
 
-function shareVerse(){
-  const u=location.origin+location.pathname;
-  const t=`📖 Ayat Firman Tuhan\n\n${lastText}\n\n${u}`;
-  if(navigator.share){
-    navigator.share({title:"BibleVerse",text:t,url:u});
-  }else{
-    navigator.clipboard.writeText(t);
-    alert("Teks siap dibagikan");
-  }
-}
-
-/* ===== INSTAGRAM FRIENDLY ===== */
-function copyForInstagram(){
-  const t=`${lastText}\n\n— BibleVerse GBT Plamongan Indah`;
-  navigator.clipboard.writeText(t);
-  alert("Teks siap ditempel ke Instagram Story");
-}
-
-function saveAsImage(){
+/* BAGI GAMBAR UNTUK STORY / SHARE */
+function shareAsImage(){
   const canvas=document.getElementById("canvas");
   const ctx=canvas.getContext("2d");
 
@@ -203,11 +184,18 @@ function saveAsImage(){
     ctx.font="italic 32px Arial";
     ctx.fillText("BibleVerse GBT Plamongan Indah",canvas.width/2,1500);
 
-    const link=document.createElement("a");
-    link.download="ayat-firman.png";
-    link.href=canvas.toDataURL();
-    link.click();
-  }
+    canvas.toBlob((blob)=>{
+      const file = new File([blob],"ayat.png",{type:"image/png"});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:"BibleVerse",text:"Ayat Firman Tuhan"});
+      }else{
+        const link=document.createElement("a");
+        link.href=URL.createObjectURL(blob);
+        link.download="ayat-firman.png";
+        link.click();
+      }
+    });
+  };
 }
 
 function wrapText(ctx,text,x,y,maxWidth,lineHeight){
