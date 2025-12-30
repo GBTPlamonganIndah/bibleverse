@@ -1,170 +1,43 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<title>Ayat untuk Hari Ini</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f2f4f7;
-  text-align:center;
-  padding:25px 15px;
-}
-.card{
-  background:#fff;
-  max-width:640px;
-  margin:auto;
-  padding:28px;
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,.12);
-}
-img{
-  max-width:120px;
-  margin-bottom:15px;
-}
-input{
-  padding:10px;
-  width:80%;
-  max-width:320px;
-  font-size:16px;
-}
-button{
-  padding:10px 18px;
-  margin:6px;
-  font-size:15px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-.primary{background:#2c7be5;color:#fff;}
-.secondary{background:#e2e6ea;}
-#result{
-  margin-top:20px;
-  line-height:1.6;
-}
-</style>
-</head>
-
-<body>
-
-<div class="card">
-  <!-- LOGO -->
-  <img src="assets/img/logo.png" alt="Logo Gereja">
-
-  <h2>Ayat untuk Hari Ini</h2>
-  <p>Masukkan nama Anda dan terimalah satu ayat firman Tuhan setiap hari.</p>
-
-  <input id="name" placeholder="Nama Anda">
-  <br><br>
-  <button class="primary" onclick="getVerse()">Dapatkan Ayat</button>
-
-  <div id="result"></div>
-
-  <div id="actions" style="display:none">
-    <button class="secondary" onclick="copyVerse()">Salin Ayat</button>
-    <button class="secondary" onclick="shareWA()">Share WhatsApp</button>
-  </div>
-</div>
-
 <script>
-// ==================================================
-// 300 REFERENSI AYAT MOTIVASI (LAI) — FULL
-// ==================================================
-const referencesLAI = [
-/* MAZMUR (90) */
-"Mazmur 1:1","Mazmur 1:2","Mazmur 1:3","Mazmur 3:4","Mazmur 3:9",
-"Mazmur 4:9","Mazmur 5:12","Mazmur 16:8","Mazmur 16:11","Mazmur 18:3",
-"Mazmur 18:33","Mazmur 20:5","Mazmur 23:1","Mazmur 23:4","Mazmur 23:6",
-"Mazmur 27:1","Mazmur 27:14","Mazmur 28:7","Mazmur 31:25","Mazmur 32:8",
-"Mazmur 34:5","Mazmur 34:9","Mazmur 34:20","Mazmur 37:4","Mazmur 37:5",
-"Mazmur 37:23","Mazmur 40:2","Mazmur 40:9","Mazmur 42:12","Mazmur 46:2",
-"Mazmur 46:11","Mazmur 55:23","Mazmur 56:4","Mazmur 62:2","Mazmur 62:6",
-"Mazmur 62:9","Mazmur 66:20","Mazmur 71:5","Mazmur 73:26","Mazmur 84:12",
-"Mazmur 91:1","Mazmur 91:2","Mazmur 91:11","Mazmur 94:19","Mazmur 107:1",
-"Mazmur 112:7","Mazmur 118:6","Mazmur 118:24","Mazmur 121:1","Mazmur 121:7",
-"Mazmur 121:8","Mazmur 126:5","Mazmur 127:1","Mazmur 138:3","Mazmur 139:14",
-"Mazmur 145:18","Mazmur 147:3","Mazmur 147:11","Mazmur 149:4","Mazmur 150:6",
-"Mazmur 9:11","Mazmur 10:17","Mazmur 11:7","Mazmur 12:7","Mazmur 13:6",
-"Mazmur 15:1","Mazmur 19:8","Mazmur 19:15","Mazmur 25:4","Mazmur 25:5",
-"Mazmur 25:10","Mazmur 30:6","Mazmur 33:4","Mazmur 33:20","Mazmur 34:4",
-"Mazmur 36:6","Mazmur 52:10","Mazmur 63:4","Mazmur 65:5","Mazmur 68:20",
-
-/* AMSAL (50) */
-"Amsal 1:7","Amsal 3:5","Amsal 3:6","Amsal 3:24","Amsal 3:26",
-"Amsal 4:18","Amsal 8:17","Amsal 9:10","Amsal 10:22","Amsal 11:25",
-"Amsal 12:25","Amsal 13:12","Amsal 14:26","Amsal 15:13","Amsal 16:3",
-"Amsal 16:9","Amsal 17:22","Amsal 18:10","Amsal 19:21","Amsal 20:24",
-"Amsal 21:21","Amsal 22:4","Amsal 22:6","Amsal 23:18","Amsal 24:14",
-"Amsal 24:16","Amsal 27:1","Amsal 27:17","Amsal 28:1","Amsal 29:25",
-"Amsal 30:5","Amsal 31:25","Amsal 31:30","Amsal 4:23","Amsal 6:6",
-"Amsal 10:12","Amsal 11:2","Amsal 12:18","Amsal 15:1","Amsal 16:24",
-"Amsal 17:17","Amsal 18:14","Amsal 19:8","Amsal 20:18","Amsal 21:30",
-"Amsal 22:29","Amsal 24:3","Amsal 25:11","Amsal 26:11","Amsal 27:19",
-
-/* YESAYA (40) */
-"Yesaya 12:2","Yesaya 26:3","Yesaya 26:4","Yesaya 30:15","Yesaya 32:17",
-"Yesaya 35:4","Yesaya 40:29","Yesaya 40:31","Yesaya 41:10","Yesaya 41:13",
-"Yesaya 43:1","Yesaya 43:2","Yesaya 44:22","Yesaya 49:15","Yesaya 50:7",
-"Yesaya 51:12","Yesaya 54:10","Yesaya 54:17","Yesaya 55:8","Yesaya 55:11",
-"Yesaya 57:15","Yesaya 58:11","Yesaya 60:1","Yesaya 61:3","Yesaya 63:9",
-"Yesaya 65:24","Yesaya 66:13","Yesaya 28:16","Yesaya 33:6","Yesaya 38:16",
-"Yesaya 40:8","Yesaya 42:3","Yesaya 45:5","Yesaya 46:4","Yesaya 48:17",
-"Yesaya 49:16","Yesaya 52:7","Yesaya 55:3","Yesaya 59:1","Yesaya 64:8",
-
-/* PERJANJIAN BARU (120) */
-"Matius 5:14","Matius 6:33","Matius 7:7","Matius 11:28","Matius 19:26",
-"Matius 28:20","Markus 9:23","Markus 10:27","Lukas 1:37","Lukas 11:9",
-"Lukas 18:27","Yohanes 1:12","Yohanes 3:16","Yohanes 8:12","Yohanes 10:10",
-"Yohanes 11:25","Yohanes 14:1","Yohanes 14:27","Yohanes 15:5","Yohanes 16:33",
-"Kisah Para Rasul 1:8","Kisah Para Rasul 4:12","Kisah Para Rasul 16:31",
-"Roma 1:16","Roma 5:8","Roma 8:1","Roma 8:18","Roma 8:28","Roma 8:31",
-"Roma 10:11","Roma 12:2","Roma 15:13",
-"1 Korintus 10:13","1 Korintus 15:58",
-"2 Korintus 4:16","2 Korintus 5:7","2 Korintus 12:9",
-"Galatia 2:20","Galatia 5:22","Galatia 6:9",
-"Efesus 2:10","Efesus 3:20","Efesus 6:10",
-"Filipi 1:6","Filipi 2:13","Filipi 4:6","Filipi 4:7","Filipi 4:13","Filipi 4:19",
-"Kolose 3:23",
-"1 Tesalonika 5:16","1 Tesalonika 5:18",
-"2 Tesalonika 3:3",
-"1 Timotius 6:12",
-"2 Timotius 1:7","2 Timotius 4:7",
-"Titus 3:5",
-"Ibrani 4:16","Ibrani 10:23","Ibrani 11:1","Ibrani 12:11",
-"Yakobus 1:5","Yakobus 1:12","Yakobus 4:7",
-"1 Petrus 5:7","2 Petrus 1:3",
-"1 Yohanes 1:7","1 Yohanes 4:4","1 Yohanes 5:4",
-"Wahyu 1:8","Wahyu 3:20","Wahyu 21:4"
-];
-
-// ===============================
 function hashValue(str){
   return str.split("").reduce((a,b)=>a+b.charCodeAt(0),0);
 }
+
 function convertToAPI(ref){
   return ref
-   .replace("Mazmur","Psalm")
-   .replace("Yesaya","Isaiah")
-   .replace("Amsal","Proverbs")
-   .replace("Matius","Matthew")
-   .replace("Markus","Mark")
-   .replace("Lukas","Luke")
-   .replace("Yohanes","John")
-   .replace("Kisah Para Rasul","Acts")
-   .replace("Roma","Romans")
-   .replace("Korintus","Corinthians")
-   .replace("Galatia","Galatians")
-   .replace("Efesus","Ephesians")
-   .replace("Filipi","Philippians")
-   .replace("Kolose","Colossians")
-   .replace("Tesalonika","Thessalonians")
-   .replace("Timotius","Timothy")
-   .replace("Ibrani","Hebrews")
-   .replace("Yakobus","James")
-   .replace("Petrus","Peter")
-   .replace("Wahyu","Revelation");
+    // kitab PL
+    .replace(/^Mazmur/, "Psalm")
+    .replace(/^Amsal/, "Proverbs")
+    .replace(/^Yesaya/, "Isaiah")
+
+    // Injil
+    .replace(/^Matius/, "Matthew")
+    .replace(/^Markus/, "Mark")
+    .replace(/^Lukas/, "Luke")
+    .replace(/^Yohanes/, "John")
+
+    // Kisah & Surat
+    .replace(/^Kisah Para Rasul/, "Acts")
+    .replace(/^Roma/, "Romans")
+    .replace(/^1 Korintus/, "1 Corinthians")
+    .replace(/^2 Korintus/, "2 Corinthians")
+    .replace(/^Galatia/, "Galatians")
+    .replace(/^Efesus/, "Ephesians")
+    .replace(/^Filipi/, "Philippians")
+    .replace(/^Kolose/, "Colossians")
+    .replace(/^1 Tesalonika/, "1 Thessalonians")
+    .replace(/^2 Tesalonika/, "2 Thessalonians")
+    .replace(/^1 Timotius/, "1 Timothy")
+    .replace(/^2 Timotius/, "2 Timothy")
+    .replace(/^Titus/, "Titus")
+    .replace(/^Ibrani/, "Hebrews")
+    .replace(/^Yakobus/, "James")
+    .replace(/^1 Petrus/, "1 Peter")
+    .replace(/^2 Petrus/, "2 Peter")
+    .replace(/^1 Yohanes/, "1 John")
+    .replace(/^2 Yohanes/, "2 John")
+    .replace(/^3 Yohanes/, "3 John")
+    .replace(/^Wahyu/, "Revelation");
 }
 
 let lastText="";
@@ -172,28 +45,34 @@ let lastText="";
 function getVerse(){
   const name=document.getElementById("name").value.trim();
   if(!name) return;
+
   const today=new Date().toISOString().slice(0,10);
   const idx=hashValue(name+today)%referencesLAI.length;
+
   const refLAI=referencesLAI[idx];
   const refAPI=convertToAPI(refLAI);
 
   fetch("https://bible-api.com/"+encodeURIComponent(refAPI))
-   .then(r=>r.json())
-   .then(d=>{
-     lastText=refLAI+"\n\n"+d.text;
-     document.getElementById("result").innerHTML =
-       "<strong>"+refLAI+"</strong><br><br>"+d.text;
-     document.getElementById("actions").style.display="block";
-   });
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d.text){
+        document.getElementById("result").innerHTML =
+          "<strong>"+refLAI+"</strong><br><br>(Ayat tidak tersedia)";
+        return;
+      }
+      lastText=refLAI+"\n\n"+d.text;
+      document.getElementById("result").innerHTML =
+        "<strong>"+refLAI+"</strong><br><br>"+d.text;
+      document.getElementById("actions").style.display="block";
+    });
 }
+
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
   alert("Ayat berhasil disalin");
 }
+
 function shareWA(){
   window.open("https://wa.me/?text="+encodeURIComponent(lastText));
 }
 </script>
-
-</body>
-</html>
