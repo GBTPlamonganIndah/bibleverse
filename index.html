@@ -50,21 +50,24 @@ input{
   font-size:16px;
 }
 
+/* === BUTTON OUTLINE PUTIH, NO FILL === */
 button{
   padding:10px 18px;
   margin:6px;
   font-size:15px;
   cursor:pointer;
-  border:none;
+  border:2px solid #fff;
   border-radius:6px;
-  background:#2c7be5;
+  background:transparent;
   color:#fff;
 }
 
-button:hover{background:#1b5fa7}
+button:hover{
+  background:rgba(255,255,255,.15);
+}
 
 #hint{
-  margin-top:18px;
+  margin-top:14px;
   color:#fff;
   font-size:15px;
   display:none;
@@ -99,10 +102,8 @@ button:hover{background:#1b5fa7}
 <em>Firman-Nya lah pelita bagi ku setiap hari</em>
 
 <input type="text" id="name" placeholder="Masukkan Nama Anda"><br>
-<!-- ✅ DIUBAH: kirim event -->
-<button onclick="prepareVerse(event)">Ambil Ayat</button>
+<button onclick="startProcess()">Ambil Ayat</button>
 
-<div id="hint">👆 Tap layar untuk memilih ayat</div>
 <div id="result"></div>
 
 <div id="actions">
@@ -110,8 +111,9 @@ button:hover{background:#1b5fa7}
   <button onclick="shareVerse()">Share Ayat</button>
 </div>
 
+<div id="hint">Tap Layar Untuk Memilih Ayat</div>
+
 <script>
-/* ===== AYAT INGGRIS + INDONESIA ===== */
 const verses = [
 {ref:"Psalm 23:1",text:"The LORD is my shepherd; I shall not want."},
 {ref:"Mazmur 23:1",text:"Tuhan adalah gembalaku, takkan kekurangan aku."},
@@ -135,51 +137,41 @@ const verses = [
 {ref:"Wahyu 21:4",text:"Allah akan menghapus segala air mata."}
 ];
 
-let lastText="", lastName="", ready=false;
 let shuffleInterval=null;
+let finalReady=false;
+let lastText="", lastName="";
 
-/* ✅ DIUBAH: stopPropagation agar hint tidak langsung hilang */
-function prepareVerse(e){
-  e.stopPropagation();
-
+function startProcess(){
   const n=document.getElementById("name").value.trim();
   if(!n)return;
 
   lastName=n;
-  ready=true;
-  document.getElementById("hint").style.display="block";
-}
-
-/* ===== TAP → AYAT BERPUTAR → BERHENTI ===== */
-document.body.addEventListener("click",()=>{
-  if(!ready)return;
-  ready=false;
-  document.getElementById("hint").style.display="none";
-  startShuffle();
-});
-
-function startShuffle(){
   const r=document.getElementById("result");
   r.style.display="block";
 
   shuffleInterval=setInterval(()=>{
     const v=verses[Math.floor(Math.random()*verses.length)];
     r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
-  },90);
+  },80);
 
   setTimeout(()=>{
     clearInterval(shuffleInterval);
-    showFinalVerse();
-  },1300);
+    document.getElementById("actions").style.display="block";
+    document.getElementById("hint").style.display="block";
+    finalReady=true;
+  },1200);
 }
 
-function showFinalVerse(){
+document.body.addEventListener("click",()=>{
+  if(!finalReady)return;
+  finalReady=false;
+  document.getElementById("hint").style.display="none";
+
   const v=verses[Math.floor(Math.random()*verses.length)];
   lastText=v.ref+"\n\n"+v.text;
-  const r=document.getElementById("result");
-  r.innerHTML=`<strong>${v.ref}</strong><br><br>${v.text}`;
-  document.getElementById("actions").style.display="block";
-}
+  document.getElementById("result").innerHTML=
+    `<strong>${v.ref}</strong><br><br>${v.text}`;
+});
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
@@ -188,7 +180,7 @@ function copyVerse(){
 
 function shareVerse(){
   const u=location.origin+location.pathname+"?name="+encodeURIComponent(lastName);
-  const t=`Ayat Firman Tuhan 🙏\n\n${lastText}\n\n${u}`;
+  const t=`Ayat Firman Tuhan\n\n${lastText}\n\n${u}`;
   if(navigator.share){
     navigator.share({title:"BibleVerse",text:t,url:u});
   }else{
