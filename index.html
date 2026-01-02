@@ -11,6 +11,15 @@
 <meta property="og:type" content="website">
 
 <style>
+  #tapHint{
+  display:none;
+  margin-top:18px;
+  font-size:14px;
+  opacity:.85;
+  cursor:pointer;
+}
+#result{cursor:pointer}
+
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -93,6 +102,7 @@ canvas{display:none}
 
 <div id="displayName"></div>
 <div id="result"></div>
+<div id="tapHint">Tekan untuk ambil Ayat</div>
 
 <div id="actions">
   <button id="shareBtn">📤 Bagikan Ayat</button>
@@ -186,6 +196,7 @@ const nameInput=document.getElementById("nameInput");
 const startBtn=document.getElementById("startBtn");
 const displayName=document.getElementById("displayName");
 const result=document.getElementById("result");
+const tapHint=document.getElementById("tapHint");
 const actions=document.getElementById("actions");
 const shareBtn=document.getElementById("shareBtn");
 const ambilLagi=document.getElementById("ambilLagi");
@@ -194,10 +205,17 @@ const canvas=document.getElementById("canvas");
 let shuffle=null,currentVerse=null,lastName="";
 
 function startShuffle(){
+  tapHint.style.display="block";
   shuffle=setInterval(()=>{
     currentVerse=VERSES[Math.floor(Math.random()*VERSES.length)];
     result.innerHTML=`<strong>${currentVerse.ref}</strong><br><br>${currentVerse.text}`;
   },80);
+}
+
+function stopShuffle(){
+  clearInterval(shuffle);
+  tapHint.style.display="none";
+  actions.style.display="flex";
 }
 
 startBtn.onclick=()=>{
@@ -212,31 +230,56 @@ startBtn.onclick=()=>{
 };
 
 ambilLagi.onclick=()=>{
+  clearInterval(shuffle);
   actions.style.display="none";
   startShuffle();
 };
 
-result.onclick=()=>{
-  clearInterval(shuffle);
-  actions.style.display="flex";
-};
+result.onclick=stopShuffle;
+tapHint.onclick=stopShuffle;
 
-shareBtn.onclick=()=>{
-  const ctx=canvas.getContext("2d");
-  const bg=new Image(),logo=new Image();
-  bg.src="background.jpeg"; logo.src="logo.png";
-  bg.onload=()=>{
-    const r=Math.max(1080/bg.width,1920/bg.height);
-    ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
-    logo.onload=()=>{
-      ctx.drawImage(logo,(1080-180)/2,360,180,180);
-      ctx.fillStyle="#fff";
-      ctx.font="bold 56px Arial";
-      ctx.fillText(lastName,120,760);
-      ctx.font="46px Arial";
-      wrapText(ctx,`${currentVerse.ref}\n\n${currentVerse.text}`,120,840,840,64);
-      canvas.toBlob(b=>{
-        navigator.share({files:[new File([b],"ayat.png",{type:"image/png"})]});
+shareBtn.onclick = () => {
+  clearInterval(shuffle); // kunci ayat (aman & konsisten)
+  if (!currentVerse) return;
+
+  const ctx = canvas.getContext("2d");
+  const bg = new Image();
+  const logo = new Image();
+
+  bg.src = "background.jpeg";
+  logo.src = "logo.png";
+
+  bg.onload = () => {
+    const r = Math.max(1080 / bg.width, 1920 / bg.height);
+    ctx.drawImage(
+      bg,
+      (1080 - bg.width * r) / 2,
+      (1920 - bg.height * r) / 2,
+      bg.width * r,
+      bg.height * r
+    );
+
+    logo.onload = () => {
+      ctx.drawImage(logo, (1080 - 180) / 2, 360, 180, 180);
+
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 64px Arial";
+      ctx.fillText(lastName, 120, 760);
+
+      ctx.font = "52px Arial";
+      wrapText(
+        ctx,
+        `${currentVerse.ref}\n\n${currentVerse.text}`,
+        120,
+        860,
+        840,
+        72
+      );
+
+      canvas.toBlob(blob => {
+        navigator.share({
+          files: [new File([blob], "ayat.png", { type: "image/png" })]
+        });
       });
     };
   };
