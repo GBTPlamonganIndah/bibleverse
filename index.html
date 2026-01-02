@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>BibleVerse GBT Plamongan Indah</title>
+
 <meta property="og:title" content="BibleVerse GBT Plamongan Indah">
 <meta property="og:description" content="Firman Tuhan untuk setiap hari">
 <meta property="og:image" content="https://gbtplamonganindah.github.io/bibleverse/background.jpeg">
 <meta property="og:type" content="website">
-
-<title>BibleVerse GBT Plamongan Indah</title>
 
 <style>
 body{
@@ -18,17 +18,10 @@ body{
   padding:20px;
   min-height:100vh;
   background:url("background.jpeg") center/cover no-repeat fixed;
-}
-
-img{width:130px;margin-bottom:15px}
-
-em{
   color:#fff;
-  display:block;
-  margin-bottom:20px;
-  text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
-
+img{width:130px;margin-bottom:15px}
+em{display:block;margin-bottom:20px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
 input{
   background:transparent;
   border:none;
@@ -36,11 +29,10 @@ input{
   outline:none;
   color:#fff;
   width:260px;
-  padding:8px 4px;
+  padding:8px;
   font-size:16px;
   text-align:center;
 }
-
 button{
   margin-top:10px;
   padding:10px 18px;
@@ -51,27 +43,20 @@ button{
   border-radius:6px;
   cursor:pointer;
 }
-
 #displayName{
   display:none;
   margin-top:14px;
   font-size:26px;
   font-weight:bold;
-  color:#fff;
   text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
-
 #result{
   display:none;
   margin-top:20px;
-  color:#fff;
   text-align:left;
   text-shadow:0 2px 6px rgba(0,0,0,.6);
 }
-
-#lockBtn{display:none}
-#actions{display:none;margin-top:12px}
-
+#lockBtn,#actions{display:none;margin-top:12px}
 canvas{display:none}
 </style>
 </head>
@@ -97,73 +82,79 @@ canvas{display:none}
 <canvas id="canvas" width="1080" height="1920"></canvas>
 
 <script>
-/* ================== 100 AYAT / PERIKOP ================== */
-const verses=[
-{ref:"Mazmur 23:1–3",text:"Tuhan adalah gembalaku, takkan kekurangan aku. Ia membaringkan aku di padang yang berumput hijau, Ia membimbing aku ke air yang tenang; Ia menyegarkan jiwaku."},
+/* ================== 100 AYAT TB ================== */
+const verses = [
+{ref:"Mazmur 1:1–3",text:"Berbahagialah orang yang tidak berjalan menurut nasihat orang fasik... ia seperti pohon yang ditanam di tepi aliran air."},
+{ref:"Mazmur 23:1–4",text:"Tuhan adalah gembalaku, takkan kekurangan aku... Sekalipun aku berjalan dalam lembah kekelaman."},
 {ref:"Mazmur 27:1",text:"Tuhan adalah terangku dan keselamatanku, kepada siapakah aku harus takut?"},
-{ref:"Mazmur 46:2–4",text:"Allah itu bagi kita tempat perlindungan dan kekuatan, sebagai penolong dalam kesesakan sangat terbukti."},
-{ref:"Mazmur 91:1–2",text:"Orang yang duduk dalam lindungan Yang Mahatinggi dan bermalam dalam naungan Yang Mahakuasa akan berkata kepada TUHAN."},
-{ref:"Amsal 3:5–6",text:"Percayalah kepada TUHAN dengan segenap hatimu, dan janganlah bersandar kepada pengertianmu sendiri."},
-{ref:"Yesaya 40:29–31",text:"Dia memberi kekuatan kepada yang lelah dan menambah semangat kepada yang tiada berdaya."},
-{ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau, jangan bimbang, sebab Aku ini Allahmu."},
-{ref:"Yesaya 43:1–2",text:"Janganlah takut, sebab Aku telah menebus engkau, Aku telah memanggil engkau dengan namamu."},
-{ref:"Yeremia 29:11–13",text:"Sebab Aku mengetahui rancangan-rancangan damai sejahtera yang ada pada-Ku mengenai kamu."},
-{ref:"Ratapan 3:22–23",text:"Tak berkesudahan kasih setia TUHAN, tak habis-habisnya rahmat-Nya, selalu baru tiap pagi."},
+{ref:"Mazmur 37:5–6",text:"Serahkanlah hidupmu kepada TUHAN dan percayalah kepada-Nya."},
+{ref:"Mazmur 46:2–3",text:"Allah itu bagi kita tempat perlindungan dan kekuatan."},
+{ref:"Mazmur 91:1–4",text:"Orang yang duduk dalam lindungan Yang Mahatinggi... sayap-Nya menjadi perisai."},
+{ref:"Mazmur 119:105",text:"Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku."},
+{ref:"Amsal 3:5–6",text:"Percayalah kepada TUHAN dengan segenap hatimu."},
+{ref:"Amsal 16:3",text:"Serahkanlah perbuatanmu kepada TUHAN."},
+{ref:"Yesaya 40:29–31",text:"Dia memberi kekuatan kepada yang lelah."},
 
-{ref:"Matius 6:33–34",text:"Carilah dahulu Kerajaan Allah dan kebenarannya, maka semuanya itu akan ditambahkan kepadamu."},
-{ref:"Matius 11:28–30",text:"Marilah kepada-Ku semua yang letih lesu dan berbeban berat, Aku akan memberi kelegaan kepadamu."},
-{ref:"Matius 28:19–20",text:"Karena itu pergilah, jadikanlah semua bangsa murid-Ku."},
-{ref:"Yohanes 1:1–3",text:"Pada mulanya adalah Firman; Firman itu bersama-sama dengan Allah dan Firman itu adalah Allah."},
-{ref:"Yohanes 3:16",text:"Karena begitu besar kasih Allah akan dunia ini, sehingga Ia telah mengaruniakan Anak-Nya yang tunggal."},
-{ref:"Yohanes 10:10",text:"Aku datang, supaya mereka mempunyai hidup, dan mempunyainya dalam segala kelimpahan."},
-{ref:"Yohanes 14:6",text:"Akulah jalan dan kebenaran dan hidup. Tidak ada seorang pun yang datang kepada Bapa, kalau tidak melalui Aku."},
-{ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu. Damai sejahtera-Ku Kuberikan kepadamu."},
+{ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
+{ref:"Yesaya 43:1–2",text:"Janganlah takut, sebab Aku telah menebus engkau."},
+{ref:"Yeremia 29:11",text:"Sebab Aku mengetahui rancangan-rancangan damai sejahtera."},
+{ref:"Ratapan 3:22–23",text:"Tak berkesudahan kasih setia TUHAN."},
+{ref:"Mikha 6:8",text:"Telah diberitahukan kepadamu apa yang baik."},
 
-{ref:"Roma 5:1–2",text:"Sebab itu kita yang dibenarkan karena iman, hidup dalam damai sejahtera dengan Allah."},
-{ref:"Roma 8:1–2",text:"Demikianlah sekarang tidak ada penghukuman bagi mereka yang ada di dalam Kristus Yesus."},
-{ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."},
-{ref:"Roma 12:1–2",text:"Persembahkanlah tubuhmu sebagai persembahan yang hidup, yang kudus dan yang berkenan kepada Allah."},
-{ref:"1 Korintus 13:4–7",text:"Kasih itu sabar; kasih itu murah hati; ia tidak cemburu."},
-{ref:"2 Korintus 5:17",text:"Jadi siapa yang ada di dalam Kristus, ia adalah ciptaan baru."},
-{ref:"Galatia 2:20",text:"Aku telah disalibkan dengan Kristus; namun aku hidup, tetapi bukan lagi aku sendiri."},
-{ref:"Galatia 5:22–23",text:"Buah Roh ialah kasih, sukacita, damai sejahtera, kesabaran."},
-{ref:"Efesus 2:8–9",text:"Sebab karena kasih karunia kamu diselamatkan oleh iman."},
-{ref:"Efesus 3:20–21",text:"Bagi Dialah yang dapat melakukan jauh lebih banyak daripada yang kita doakan."},
+{ref:"Matius 5:14–16",text:"Kamu adalah terang dunia."},
+{ref:"Matius 6:33",text:"Carilah dahulu Kerajaan Allah."},
+{ref:"Matius 11:28–30",text:"Marilah kepada-Ku semua yang letih lesu."},
+{ref:"Matius 28:19–20",text:"Pergilah, jadikanlah semua bangsa murid-Ku."},
+
+{ref:"Yohanes 1:1–3",text:"Pada mulanya adalah Firman."},
+{ref:"Yohanes 3:16",text:"Karena begitu besar kasih Allah akan dunia ini."},
+{ref:"Yohanes 8:12",text:"Akulah terang dunia."},
+{ref:"Yohanes 10:10",text:"Aku datang supaya mereka mempunyai hidup."},
+{ref:"Yohanes 14:6",text:"Akulah jalan dan kebenaran dan hidup."},
+{ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
+
+{ref:"Roma 5:1",text:"Kita yang dibenarkan karena iman, hidup dalam damai sejahtera."},
+{ref:"Roma 8:1",text:"Tidak ada penghukuman bagi mereka yang ada di dalam Kristus."},
+{ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
+{ref:"Roma 12:1–2",text:"Persembahkanlah tubuhmu sebagai persembahan yang hidup."},
+
+{ref:"1 Korintus 13:4–7",text:"Kasih itu sabar; kasih itu murah hati."},
+{ref:"2 Korintus 5:17",text:"Siapa yang ada di dalam Kristus adalah ciptaan baru."},
+{ref:"Galatia 2:20",text:"Aku telah disalibkan dengan Kristus."},
+{ref:"Galatia 5:22–23",text:"Buah Roh ialah kasih, sukacita, damai sejahtera."},
+{ref:"Efesus 2:8–9",text:"Karena kasih karunia kamu diselamatkan oleh iman."},
+{ref:"Efesus 6:10–11",text:"Kuatkanlah dirimu di dalam Tuhan."},
 
 {ref:"Filipi 4:6–7",text:"Janganlah hendaknya kamu kuatir tentang apa pun juga."},
-{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung di dalam Dia yang memberi kekuatan kepadaku."},
-{ref:"Kolose 3:23–24",text:"Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu."},
-{ref:"2 Timotius 1:7",text:"Sebab Allah memberikan kepada kita bukan roh ketakutan."},
-{ref:"Ibrani 4:16",text:"Sebab itu marilah kita dengan penuh keberanian menghampiri takhta kasih karunia."},
+{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung di dalam Dia."},
+{ref:"Kolose 3:23",text:"Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu."},
+
+{ref:"1 Tesalonika 5:16–18",text:"Bersukacitalah senantiasa. Tetaplah berdoa."},
+{ref:"2 Timotius 1:7",text:"Allah memberikan kepada kita roh yang membangkitkan kekuatan."},
 {ref:"Ibrani 11:1",text:"Iman adalah dasar dari segala sesuatu yang kita harapkan."},
-{ref:"Yakobus 1:5",text:"Jika di antara kamu ada yang kekurangan hikmat, hendaklah ia memintakannya kepada Allah."},
-{ref:"1 Petrus 5:7",text:"Serahkanlah segala kekuatiranmu kepada-Nya, sebab Ia yang memelihara kamu."},
+{ref:"Yakobus 1:5",text:"Jika ada yang kekurangan hikmat, mintalah kepada Allah."},
+{ref:"1 Petrus 5:7",text:"Serahkanlah segala kekuatiranmu kepada-Nya."},
 {ref:"1 Yohanes 4:7–8",text:"Barangsiapa tidak mengasihi, ia tidak mengenal Allah."},
 {ref:"Wahyu 21:3–4",text:"Ia akan menghapus segala air mata dari mata mereka."}
 ];
 
-/* ================== LOGIC STABIL ================== */
-let shuffle=null;
-let currentVerse=null;
-let lastText="", lastName="";
-
-const nameInput=document.getElementById("name");
-const startBtn=document.getElementById("startBtn");
+/* ================== LOGIC ================== */
+let shuffle=null, currentVerse=null, lastText="", lastName="";
+const nameInput=name, startBtn=document.getElementById("startBtn");
 const lockBtn=document.getElementById("lockBtn");
 const result=document.getElementById("result");
 const displayName=document.getElementById("displayName");
 const actions=document.getElementById("actions");
+const canvas=document.getElementById("canvas");
 
 startBtn.onclick=()=>{
   lastName=nameInput.value.trim();
-  if(!lastName) return;
+  if(!lastName){alert("Isi nama dulu");return;}
 
   nameInput.style.display="none";
   startBtn.style.display="none";
-
   displayName.innerText=lastName;
   displayName.style.display="block";
-
   result.style.display="block";
   lockBtn.style.display="inline-block";
 
@@ -182,30 +173,24 @@ lockBtn.onclick=()=>{
 
 function copyVerse(){
   navigator.clipboard.writeText(lastText);
+  alert("Ayat disalin");
 }
 
 function shareAsImage(){
-  const c=canvas,ctx=c.getContext("2d");
-  const bg=new Image(); bg.src="background.jpeg";
-  const logo=new Image(); logo.src="logo.png";
+  const ctx=canvas.getContext("2d");
+  const bg=new Image(),logo=new Image();
+  bg.src="background.jpeg"; logo.src="logo.png";
 
   bg.onload=()=>{
-    ctx.drawImage(bg,0,0,1080,1920);
+    const r=Math.max(1080/bg.width,1920/bg.height);
+    ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
     logo.onload=()=>{
       ctx.drawImage(logo,(1080-180)/2,420,180,180);
-
-      ctx.fillStyle="#fff";
-      ctx.textAlign="left";
-      ctx.shadowColor="rgba(0,0,0,.6)";
-      ctx.shadowBlur=6;
-
-      ctx.font="bold 56px Arial";
+      ctx.fillStyle="#fff";ctx.font="bold 56px Arial";
       ctx.fillText(lastName,120,820);
-
       ctx.font="46px Arial";
       wrapText(ctx,lastText,120,900,840,64);
-
-      c.toBlob(b=>{
+      canvas.toBlob(b=>{
         navigator.share({files:[new File([b],"ayat.png",{type:"image/png"})]});
       });
     };
@@ -216,15 +201,11 @@ function wrapText(ctx,text,x,y,w,h){
   text.split("\n").forEach(p=>{
     let line="";
     p.split(" ").forEach(word=>{
-      const test=line+word+" ";
-      if(ctx.measureText(test).width>w){
-        ctx.fillText(line,x,y);
-        line=word+" ";
-        y+=h;
-      }else line=test;
+      const t=line+word+" ";
+      if(ctx.measureText(t).width>w){ctx.fillText(line,x,y);line=word+" ";y+=h;}
+      else line=t;
     });
-    ctx.fillText(line,x,y);
-    y+=h;
+    ctx.fillText(line,x,y);y+=h;
   });
 }
 </script>
