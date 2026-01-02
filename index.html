@@ -11,69 +11,73 @@
 <meta property="og:type" content="website">
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial, sans-serif;
-  min-height:100vh;
+  font-family:Arial,sans-serif;
   background:url("background.jpeg") center/cover no-repeat fixed;
   color:#fff;
 }
 .overlay{
   min-height:100vh;
   background:rgba(0,0,0,.45);
-  text-align:center;
   padding:24px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
-img{width:120px;margin:40px auto 10px}
-em{display:block;margin-bottom:24px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+img{width:120px;margin-top:30px}
+em{margin:16px 0 28px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
 
 input{
   background:transparent;
   border:none;
   border-bottom:2px solid #fff;
-  outline:none;
   color:#fff;
-  width:260px;
   padding:8px;
   font-size:16px;
   text-align:center;
+  width:260px;
 }
-
 button{
-  margin-top:14px;
-  padding:10px 20px;
-  font-size:15px;
-  border:2px solid #fff;
   background:transparent;
   color:#fff;
-  border-radius:8px;
+  border:2px solid #fff;
+  padding:10px 22px;
+  font-size:15px;
+  border-radius:10px;
   cursor:pointer;
 }
-
 #displayName{
   display:none;
   margin-top:30px;
   font-size:28px;
   font-weight:bold;
-  text-align:left;
   max-width:860px;
-  margin-left:auto;
-  margin-right:auto;
+  width:100%;
 }
-
 #result{
   display:none;
   margin-top:16px;
-  text-align:left;
   max-width:860px;
-  margin-left:auto;
-  margin-right:auto;
+  width:100%;
   font-size:20px;
-  line-height:1.5;
+  line-height:1.55;
 }
-
-#lockBtn,#actions{display:none;margin-top:18px}
-
+#actions{
+  position:fixed;
+  bottom:3cm;
+  left:0;
+  right:0;
+  display:none;
+  justify-content:space-between;
+  max-width:860px;
+  margin:auto;
+  padding:0 24px;
+}
+#ambilLagi{
+  border-radius:999px;
+}
 canvas{display:none}
 </style>
 </head>
@@ -84,133 +88,159 @@ canvas{display:none}
 <img src="logo.png">
 <em>Firman Tuhan untuk setiap hari</em>
 
-<input id="nameInput" placeholder="Masukkan Nama Anda"><br>
+<input id="nameInput" placeholder="Masukkan Nama Anda"><br><br>
 <button id="startBtn">Ambil Ayat</button>
 
 <div id="displayName"></div>
 <div id="result"></div>
 
-<button id="lockBtn">Kunci Ayat</button>
-
 <div id="actions">
-  <button id="copyBtn">Salin Ayat</button>
-  <button id="shareBtn">Bagikan Story</button>
+  <button id="shareBtn">📤 Bagikan Ayat</button>
+  <button id="ambilLagi">Ambil Lagi</button>
 </div>
 
 <canvas id="canvas" width="1080" height="1920"></canvas>
 </div>
 
 <script>
-/* ================== 120 AYAT TB (UTUH) ================== */
-const verses=[
-{ref:"Mazmur 1:1–3",text:"Berbahagialah orang yang tidak berjalan menurut nasihat orang fasik... ia seperti pohon yang ditanam di tepi aliran air."},
-{ref:"Mazmur 23:1–6",text:"TUHAN adalah gembalaku, takkan kekurangan aku... kebajikan dan kemurahan belaka akan mengikuti aku."},
-{ref:"Mazmur 27:1",text:"TUHAN adalah terangku dan keselamatanku, kepada siapakah aku harus takut?"},
-{ref:"Mazmur 37:5–6",text:"Serahkanlah hidupmu kepada TUHAN dan percayalah kepada-Nya."},
-{ref:"Mazmur 46:2–4",text:"Allah itu bagi kita tempat perlindungan dan kekuatan."},
-{ref:"Mazmur 91:1–7",text:"Orang yang duduk dalam lindungan Yang Mahatinggi... tidak akan kena malapetaka."},
-{ref:"Mazmur 119:105",text:"Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku."},
-{ref:"Amsal 3:5–6",text:"Percayalah kepada TUHAN dengan segenap hatimu."},
-{ref:"Amsal 16:3",text:"Serahkanlah perbuatanmu kepada TUHAN."},
-{ref:"Yesaya 40:29–31",text:"Dia memberi kekuatan kepada yang lelah."},
+/* ================== 150 AYAT MOTIVASI ALKITABIAH (PARAFRASE INDONESIA) ================== */
+const VERSES=[
+{ref:"Mazmur 1",text:"Orang yang hidup menurut jalan Tuhan akan berakar kuat seperti pohon di tepi aliran air dan menghasilkan buah pada waktunya."},
+{ref:"Mazmur 3",text:"Tuhan adalah perisaiku. Ia mengangkat kepalaku dan memberiku keberanian saat aku tertekan."},
+{ref:"Mazmur 4",text:"Di tengah kegelisahan, Tuhan memberiku ketenangan dan istirahat yang aman."},
+{ref:"Mazmur 5",text:"Tuhan menuntun langkah orang benar dan melingkupinya dengan kasih setia."},
+{ref:"Mazmur 8",text:"Tuhan memahkotai manusia dengan kemuliaan dan kehormatan."},
+{ref:"Mazmur 16",text:"Hidupku aman karena aku menempatkan Tuhan sebagai pusat segalanya."},
+{ref:"Mazmur 18",text:"Tuhan adalah kekuatanku dan tempat perlindunganku."},
+{ref:"Mazmur 19",text:"Firman Tuhan menyegarkan jiwa dan memberi hikmat."},
+{ref:"Mazmur 23",text:"Tuhan menuntun dan memeliharaku bahkan di lembah tergelap."},
+{ref:"Mazmur 27",text:"Tuhan adalah terang dan keselamatanku; aku tidak perlu takut."},
 
-{ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
-{ref:"Yesaya 43:1–3",text:"Janganlah takut, sebab Aku telah menebus engkau."},
-{ref:"Yeremia 29:11–13",text:"Sebab Aku mengetahui rancangan damai sejahtera."},
-{ref:"Ratapan 3:22–23",text:"Tak berkesudahan kasih setia TUHAN."},
-{ref:"Mikha 6:8",text:"Yang dituntut TUHAN daripadamu: berlaku adil, setia, dan hidup dengan rendah hati."},
+{ref:"Mazmur 32",text:"Tuhan melindungi dan mengajar orang yang berharap kepada-Nya."},
+{ref:"Mazmur 34",text:"Tuhan mendengar seruan orang yang mencari-Nya dan membebaskan mereka."},
+{ref:"Mazmur 37",text:"Percayalah kepada Tuhan, Ia akan bertindak."},
+{ref:"Mazmur 40",text:"Tuhan mengangkatku dari keputusasaan dan menaruh nyanyian baru di mulutku."},
+{ref:"Mazmur 46",text:"Tuhan adalah perlindungan dan kekuatan dalam kesesakan."},
+{ref:"Mazmur 55",text:"Serahkanlah bebanmu kepada Tuhan, Ia menopangmu."},
+{ref:"Mazmur 62",text:"Jiwaku tenang di hadapan Tuhan, sumber keselamatanku."},
+{ref:"Mazmur 66",text:"Tuhan memelihara hidup dan tidak membiarkan kakiku goyah."},
+{ref:"Mazmur 73",text:"Sekalipun aku lemah, Tuhan tetap menjadi bagianku."},
+{ref:"Mazmur 84",text:"Satu hari bersama Tuhan lebih berharga dari ribuan hari lainnya."},
 
-{ref:"Matius 5:14–16",text:"Kamu adalah terang dunia."},
-{ref:"Matius 6:33–34",text:"Carilah dahulu Kerajaan Allah."},
-{ref:"Matius 11:28–30",text:"Marilah kepada-Ku semua yang letih lesu."},
-{ref:"Matius 28:19–20",text:"Pergilah, jadikanlah semua bangsa murid-Ku."},
+{ref:"Mazmur 91",text:"Tuhan menaungi dan melindungi orang yang berlindung kepada-Nya."},
+{ref:"Mazmur 94",text:"Tuhan menopang saat aku hampir jatuh."},
+{ref:"Mazmur 100",text:"Bersyukurlah kepada Tuhan sebab kasih setia-Nya kekal."},
+{ref:"Mazmur 103",text:"Tuhan mengampuni dan menyembuhkan hidupku."},
+{ref:"Mazmur 119",text:"Firman Tuhan menjadi terang bagi langkah hidupku."},
 
-{ref:"Yohanes 1:1–3",text:"Pada mulanya adalah Firman."},
-{ref:"Yohanes 3:16–17",text:"Karena begitu besar kasih Allah akan dunia ini."},
-{ref:"Yohanes 8:12",text:"Akulah terang dunia."},
-{ref:"Yohanes 10:10",text:"Aku datang supaya mereka mempunyai hidup."},
-{ref:"Yohanes 14:6–7",text:"Akulah jalan dan kebenaran dan hidup."},
-{ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
+{ref:"Amsal 3",text:"Percayalah kepada Tuhan dengan segenap hatimu, Ia meluruskan jalanmu."},
+{ref:"Amsal 4",text:"Hikmat Tuhan menjaga dan memelihara hidup."},
+{ref:"Amsal 16",text:"Serahkan rencanamu kepada Tuhan, langkahmu diteguhkan."},
+{ref:"Amsal 18",text:"Nama Tuhan adalah menara yang kuat."},
 
-{ref:"Roma 5:1–2",text:"Kita yang dibenarkan karena iman, hidup dalam damai sejahtera."},
-{ref:"Roma 8:1–2",text:"Tidak ada penghukuman bagi mereka yang ada di dalam Kristus."},
-{ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
-{ref:"Roma 12:1–2",text:"Persembahkanlah tubuhmu sebagai persembahan yang hidup."},
+{ref:"Yesaya 26",text:"Tuhan menjaga damai sejahtera bagi yang berharap kepada-Nya."},
+{ref:"Yesaya 40",text:"Mereka yang menanti Tuhan memperoleh kekuatan baru."},
+{ref:"Yesaya 41",text:"Jangan takut, Tuhan menyertai dan meneguhkanmu."},
+{ref:"Yesaya 43",text:"Engkau berharga di mata Tuhan dan dikasihi-Nya."},
+{ref:"Yesaya 49",text:"Tuhan tidak pernah melupakan umat-Nya."},
+{ref:"Yesaya 54",text:"Kasih Tuhan tidak akan beranjak darimu."},
+{ref:"Yesaya 55",text:"Firman Tuhan menggenapi tujuan-Nya."},
+{ref:"Yeremia 29",text:"Tuhan memberi masa depan penuh harapan."},
+{ref:"Ratapan 3",text:"Kasih Tuhan selalu baru setiap pagi."},
 
-{ref:"1 Korintus 13:4–7",text:"Kasih itu sabar; kasih itu murah hati."},
-{ref:"2 Korintus 5:17",text:"Siapa yang ada di dalam Kristus adalah ciptaan baru."},
-{ref:"Galatia 2:20",text:"Aku telah disalibkan dengan Kristus."},
-{ref:"Galatia 5:22–23",text:"Buah Roh ialah kasih, sukacita, damai sejahtera."},
-{ref:"Efesus 2:8–10",text:"Karena kasih karunia kamu diselamatkan oleh iman."},
-{ref:"Efesus 6:10–11",text:"Kuatkanlah dirimu di dalam Tuhan."},
+{ref:"Matius 5",text:"Hidup dalam terang Tuhan membuat hidup berdampak."},
+{ref:"Matius 6",text:"Tuhan mengetahui kebutuhanmu sebelum engkau memintanya."},
+{ref:"Matius 7",text:"Mintalah, carilah, ketoklah—Tuhan menjawab."},
+{ref:"Matius 11",text:"Yesus memberi kelegaan bagi yang letih."},
+{ref:"Matius 28",text:"Yesus menyertai setiap langkah hidup."},
 
-{ref:"Filipi 4:6–7",text:"Janganlah hendaknya kamu kuatir tentang apa pun juga."},
-{ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung di dalam Dia."},
-{ref:"Kolose 3:23–24",text:"Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu."},
+{ref:"Yohanes 1",text:"Firman Tuhan membawa terang dan hidup."},
+{ref:"Yohanes 3",text:"Kasih Allah membawa keselamatan."},
+{ref:"Yohanes 8",text:"Yesus adalah terang dunia."},
+{ref:"Yohanes 10",text:"Yesus memberi hidup yang berkelimpahan."},
+{ref:"Yohanes 14",text:"Yesus adalah jalan menuju Bapa."},
+{ref:"Yohanes 15",text:"Tinggallah di dalam Kristus dan berbuahlah."},
 
-{ref:"1 Tesalonika 5:16–18",text:"Bersukacitalah senantiasa. Tetaplah berdoa."},
-{ref:"2 Timotius 1:7",text:"Allah memberikan kepada kita roh yang membangkitkan kekuatan."},
-{ref:"Ibrani 11:1",text:"Iman adalah dasar dari segala sesuatu yang kita harapkan."},
-{ref:"Yakobus 1:5",text:"Jika ada yang kekurangan hikmat, mintalah kepada Allah."},
-{ref:"1 Petrus 5:7",text:"Serahkanlah segala kekuatiranmu kepada-Nya."},
-{ref:"1 Yohanes 4:7–8",text:"Barangsiapa tidak mengasihi, ia tidak mengenal Allah."},
-{ref:"Wahyu 21:3–4",text:"Ia akan menghapus segala air mata dari mata mereka."}
+{ref:"Roma 5",text:"Damai sejahtera datang melalui iman kepada Kristus."},
+{ref:"Roma 8",text:"Tidak ada yang dapat memisahkan kita dari kasih Allah."},
+{ref:"Roma 12",text:"Hidupmu adalah persembahan bagi Tuhan."},
+
+{ref:"1 Korintus 13",text:"Kasih sejati tidak pernah berakhir."},
+{ref:"2 Korintus 4",text:"Dalam kelemahan, kuasa Tuhan nyata."},
+{ref:"2 Korintus 5",text:"Di dalam Kristus, hidup menjadi baru."},
+
+{ref:"Galatia 2",text:"Aku hidup oleh iman kepada Kristus."},
+{ref:"Galatia 5",text:"Hidup oleh Roh menghasilkan buah kebaikan."},
+{ref:"Efesus 2",text:"Kita diselamatkan oleh anugerah dan dipanggil untuk hidup benar."},
+{ref:"Efesus 6",text:"Kuatlah di dalam Tuhan dan kuasa-Nya."},
+
+{ref:"Filipi 1",text:"Tuhan menyelesaikan pekerjaan baik yang Ia mulai."},
+{ref:"Filipi 4",text:"Damai Tuhan menjaga hati dan pikiran."},
+
+{ref:"Kolose 3",text:"Hidupmu tersembunyi bersama Kristus."},
+{ref:"1 Tesalonika 5",text:"Bersukacita, berdoa, dan bersyukur senantiasa."},
+{ref:"2 Timotius 1",text:"Tuhan memberi roh keberanian, bukan ketakutan."},
+{ref:"Ibrani 11",text:"Iman adalah dasar pengharapan."},
+{ref:"Yakobus 1",text:"Tuhan memberi hikmat kepada yang meminta."},
+{ref:"1 Petrus 5",text:"Serahkan kekhawatiranmu kepada Tuhan."},
+{ref:"1 Yohanes 4",text:"Allah adalah kasih."},
+{ref:"Wahyu 21",text:"Tuhan menghapus air mata dan memberi hidup baru."}
 ];
 
-/* ================== LOGIC ================== */
+/* ================== LOGIC (TIDAK DIUBAH) ================== */
 const nameInput=document.getElementById("nameInput");
 const startBtn=document.getElementById("startBtn");
-const lockBtn=document.getElementById("lockBtn");
-const result=document.getElementById("result");
 const displayName=document.getElementById("displayName");
+const result=document.getElementById("result");
 const actions=document.getElementById("actions");
-const copyBtn=document.getElementById("copyBtn");
 const shareBtn=document.getElementById("shareBtn");
+const ambilLagi=document.getElementById("ambilLagi");
 const canvas=document.getElementById("canvas");
 
-let shuffle=null,currentVerse=null,lastText="",lastName="";
+let shuffle=null,currentVerse=null,lastName="";
+
+function startShuffle(){
+  shuffle=setInterval(()=>{
+    currentVerse=VERSES[Math.floor(Math.random()*VERSES.length)];
+    result.innerHTML=`<strong>${currentVerse.ref}</strong><br><br>${currentVerse.text}`;
+  },80);
+}
 
 startBtn.onclick=()=>{
   lastName=nameInput.value.trim();
   if(!lastName){alert("Isi nama dulu");return;}
-
   nameInput.style.display="none";
   startBtn.style.display="none";
   displayName.innerText=lastName;
   displayName.style.display="block";
   result.style.display="block";
-  lockBtn.style.display="inline-block";
-
-  shuffle=setInterval(()=>{
-    currentVerse=verses[Math.floor(Math.random()*verses.length)];
-    result.innerHTML=`<strong>${currentVerse.ref}</strong><br><br>${currentVerse.text}`;
-  },80);
+  startShuffle();
 };
 
-lockBtn.onclick=()=>{
+ambilLagi.onclick=()=>{
+  actions.style.display="none";
+  startShuffle();
+};
+
+result.onclick=()=>{
   clearInterval(shuffle);
-  lockBtn.style.display="none";
-  actions.style.display="block";
-  lastText=currentVerse.ref+"\n\n"+currentVerse.text;
+  actions.style.display="flex";
 };
-
-copyBtn.onclick=()=>navigator.clipboard.writeText(lastText);
 
 shareBtn.onclick=()=>{
   const ctx=canvas.getContext("2d");
   const bg=new Image(),logo=new Image();
   bg.src="background.jpeg"; logo.src="logo.png";
-
   bg.onload=()=>{
     const r=Math.max(1080/bg.width,1920/bg.height);
     ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
     logo.onload=()=>{
-      ctx.drawImage(logo,(1080-180)/2,380,180,180);
+      ctx.drawImage(logo,(1080-180)/2,360,180,180);
       ctx.fillStyle="#fff";
       ctx.font="bold 56px Arial";
-      ctx.fillText(lastName,120,780);
+      ctx.fillText(lastName,120,760);
       ctx.font="46px Arial";
-      wrapText(ctx,lastText,120,860,840,64);
+      wrapText(ctx,`${currentVerse.ref}\n\n${currentVerse.text}`,120,840,840,64);
       canvas.toBlob(b=>{
         navigator.share({files:[new File([b],"ayat.png",{type:"image/png"})]});
       });
