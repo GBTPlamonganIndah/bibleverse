@@ -1,35 +1,25 @@
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",()=>{
 
-const verses=[
-  {
-    ref:"Roma 8:28",
-    text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."
-  }
-];
+const verses=[{
+  ref:"Roma 8:28",
+  text:"Kita tahu bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia."
+}];
 
-let shuffle=null;
-let lastText="", lastName="";
 const verse = verses[0];
+let shuffle=null,lastText="",lastName="";
 
-// ambil elemen
-const name = document.getElementById("name");
-const startBtn = document.getElementById("startBtn");
-const displayName = document.getElementById("displayName");
-const result = document.getElementById("result");
-const hint = document.getElementById("hint");
-const tapArea = document.getElementById("tapArea");
-const actions = document.getElementById("actions");
-const canvas = document.getElementById("canvas");
+const name=document.getElementById("name");
+const startBtn=document.getElementById("startBtn");
+const displayName=document.getElementById("displayName");
+const result=document.getElementById("result");
+const hint=document.getElementById("hint");
+const tapArea=document.getElementById("tapArea");
+const actions=document.getElementById("actions");
+const canvas=document.getElementById("canvas");
 
-// kalau script dipanggil tapi elemen gak ada → amankan
-if(!name || !startBtn || !displayName || !result || !hint || !tapArea || !actions || !canvas){
-  console.warn("Elemen HTML belum lengkap");
-  return;
-}
-
-startBtn.onclick = () => {
-  lastName = name.value.trim();
+startBtn.onclick=()=>{
+  lastName=name.value.trim();
   if(!lastName) return;
 
   name.style.display="none";
@@ -49,107 +39,70 @@ startBtn.onclick = () => {
   },80);
 };
 
-tapArea.onclick = () => {
+tapArea.onclick=()=>{
   clearInterval(shuffle);
 
   result.innerHTML=`<strong>${verse.ref}</strong><br><br>${verse.text}`;
+  lastText=verse.ref+"\n\n"+verse.text;
 
   tapArea.style.display="none";
   hint.style.display="none";
   actions.style.display="block";
-
-  lastText = verse.ref + "\n\n" + verse.text;
 };
 
-function copyVerse(){
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(lastText);
-  } else {
-    alert("Clipboard tidak didukung di device ini");
-  }
-}
+window.copyVerse=()=>{
+  navigator.clipboard.writeText(lastText);
+};
 
-function loadImage(src){
-  return new Promise(res=>{
-    const img=new Image();
-    img.src=src;
-    img.onload=()=>res(img);
-    img.onerror=()=>res(null);  // anti crash kalau gambar hilang
-  });
-}
+window.shareAsImage=()=>{
+  const ctx=canvas.getContext("2d");
+  canvas.width=1080;
+  canvas.height=1920;
 
-async function shareAsImage(){
-  const c = canvas;
-  const ctx = c.getContext("2d");
+  const bg=new Image();
+  bg.src="background.jpeg";
+  const logo=new Image();
+  logo.src="logo.png";
 
-  c.width = 1080;
-  c.height = 1920;
-  ctx.clearRect(0,0,c.width,c.height);
+  bg.onload=()=>{
+    const r=Math.max(1080/bg.width,1920/bg.height);
+    ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
 
-  const bg = await loadImage("background.jpeg");
-  const logo = await loadImage("logo.png");
+    logo.onload=()=>{
+      ctx.drawImage(logo,(1080-180)/2,420,180,180);
 
-  if(bg){
-    const r = Math.max(1080/bg.width,1920/bg.height);
-    ctx.drawImage(
-      bg,
-      (1080-bg.width*r)/2,
-      (1920-bg.height*r)/2,
-      bg.width*r,
-      bg.height*r
-    );
-  } else {
-    ctx.fillStyle="#000";
-    ctx.fillRect(0,0,1080,1920);
-  }
+      ctx.fillStyle="#fff";
+      ctx.textAlign="left";
+      ctx.shadowColor="rgba(0,0,0,.6)";
+      ctx.shadowBlur=6;
 
-  if(logo){
-    ctx.drawImage(logo,(1080-180)/2,420,180,180);
-  }
+      ctx.font="bold 56px Arial";
+      ctx.fillText(lastName,120,820);
 
-  ctx.fillStyle="#fff";
-  ctx.textAlign="left";
-  ctx.shadowColor="rgba(0,0,0,.6)";
-  ctx.shadowBlur=6;
+      ctx.font="46px Arial";
+      wrapText(ctx,lastText,120,900,840,64);
 
-  ctx.font="bold 56px Arial";
-  ctx.fillText(lastName,120,820);
-
-  ctx.font="46px Arial";
-  wrapText(ctx,lastText,120,900,840,64);
-
-  c.toBlob(b=>{
-    if(navigator.share){
-      navigator.share({
-        files:[new File([b],"ayat.png",{type:"image/png"})]
-      }).catch(()=>{});
-    } else {
-      alert("Fitur share tidak didukung di browser ini");
-    }
-  });
-}
+      canvas.toBlob(b=>{
+        navigator.share({
+          files:[new File([b],"ayat.png",{type:"image/png"})]
+        });
+      });
+    };
+  };
+};
 
 function wrapText(ctx,text,x,y,w,h){
-  text.split("\n").forEach(block=>{
-    let line="";
-    block.split(" ").forEach(word=>{
-      const test=line+word+" ";
-      if(ctx.measureText(test).width>w){
-        ctx.fillText(line,x,y);
-        line=word+" ";
-        y+=h;
-      }else{
-        line=test;
-      }
-    });
-    ctx.fillText(line,x,y);
-    y+=h;
+  let line="";
+  text.split(" ").forEach(word=>{
+    const test=line+word+" ";
+    if(ctx.measureText(test).width>w){
+      ctx.fillText(line,x,y);
+      line=word+" ";
+      y+=h;
+    }else line=test;
   });
+  ctx.fillText(line,x,y);
 }
 
-window.copyVerse = copyVerse;
-window.shareAsImage = shareAsImage;
-
 });
-    </script>
-    
+</script>
