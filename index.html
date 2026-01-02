@@ -103,7 +103,7 @@ canvas{display:none}
 </div>
 
 <script>
-/* ================== 150 AYAT MOTIVASI ALKITABIAH (PARAFRASE INDONESIA) ================== */
+/* ================== AYAT MOTIVASI ALKITABIAH (PARAFRASE INDONESIA) ================== */
 const VERSES=[
 {ref:"Mazmur 1",text:"Orang yang hidup menurut jalan Tuhan akan berakar kuat seperti pohon di tepi aliran air dan menghasilkan buah pada waktunya."},
 {ref:"Mazmur 3",text:"Tuhan adalah perisaiku. Ia mengangkat kepalaku dan memberiku keberanian saat aku tertekan."},
@@ -115,7 +115,6 @@ const VERSES=[
 {ref:"Mazmur 19",text:"Firman Tuhan menyegarkan jiwa dan memberi hikmat."},
 {ref:"Mazmur 23",text:"Tuhan menuntun dan memeliharaku bahkan di lembah tergelap."},
 {ref:"Mazmur 27",text:"Tuhan adalah terang dan keselamatanku; aku tidak perlu takut."},
-
 {ref:"Mazmur 32",text:"Tuhan melindungi dan mengajar orang yang berharap kepada-Nya."},
 {ref:"Mazmur 34",text:"Tuhan mendengar seruan orang yang mencari-Nya dan membebaskan mereka."},
 {ref:"Mazmur 37",text:"Percayalah kepada Tuhan, Ia akan bertindak."},
@@ -126,65 +125,60 @@ const VERSES=[
 {ref:"Mazmur 66",text:"Tuhan memelihara hidup dan tidak membiarkan kakiku goyah."},
 {ref:"Mazmur 73",text:"Sekalipun aku lemah, Tuhan tetap menjadi bagianku."},
 {ref:"Mazmur 84",text:"Satu hari bersama Tuhan lebih berharga dari ribuan hari lainnya."},
-
 {ref:"Mazmur 91",text:"Tuhan menaungi dan melindungi orang yang berlindung kepada-Nya."},
-{ref:"Mazmur 94",text:"Tuhan menopang saat aku hampir jatuh."},
-{ref:"Mazmur 100",text:"Bersyukurlah kepada Tuhan sebab kasih setia-Nya kekal."},
-{ref:"Mazmur 103",text:"Tuhan mengampuni dan menyembuhkan hidupku."},
-{ref:"Mazmur 119",text:"Firman Tuhan menjadi terang bagi langkah hidupku."},
+{ref:"Mazmur 94",text:"Saat aku hampir jatuh, kasih Tuhan menopang dan meneguhkan aku."},
+{ref:"Mazmur 100",text:"Datanglah kepada Tuhan dengan syukur, sebab kasih setia-Nya kekal."},
+{ref:"Mazmur 103",text:"Tuhan mengampuni segala dosaku dan memulihkan hidupku."},
+{ref:"Mazmur 119",text:"Firman Tuhan menjadi pelita bagi kakiku dan terang bagi jalanku."},
 
-{ref:"Amsal 3",text:"Percayalah kepada Tuhan dengan segenap hatimu, Ia meluruskan jalanmu."},
-{ref:"Amsal 4",text:"Hikmat Tuhan menjaga dan memelihara hidup."},
-{ref:"Amsal 16",text:"Serahkan rencanamu kepada Tuhan, langkahmu diteguhkan."},
-{ref:"Amsal 18",text:"Nama Tuhan adalah menara yang kuat."},
+/* === TAMBAHAN LENGKAP KEJADIAN – WAHYU === */
+{ref:"Kejadian 1",text:"Allah menciptakan segala sesuatu dengan teratur dan baik; hidup ini bukan kebetulan, melainkan rancangan-Nya yang penuh tujuan."},
+{ref:"Kejadian 12",text:"Tuhan memanggil dan menuntun langkah iman, menjanjikan masa depan dan berkat melalui ketaatan."},
+{ref:"Kejadian 15",text:"Ketika manusia percaya kepada Tuhan, iman itu diperhitungkan sebagai kebenaran."},
+{ref:"Keluaran 14",text:"Tuhan membuka jalan di tengah jalan buntu dan berperang bagi umat-Nya."},
+{ref:"Ulangan 31",text:"Tuhan berjalan di depanmu, Ia tidak akan meninggalkan atau membiarkanmu."},
+{ref:"Yosua 1",text:"Kuatkan dan teguhkan hatimu, sebab Tuhan menyertai ke mana pun engkau melangkah."},
+{ref:"Hakim-hakim 6",text:"Tuhan memanggil orang biasa menjadi alat-Nya yang luar biasa."},
+{ref:"Rut 2",text:"Kesetiaan dan kerendahan hati membuka jalan bagi pemeliharaan Tuhan."},
+{ref:"1 Samuel 16",text:"Tuhan melihat hati, bukan penampilan luar."},
+{ref:"2 Samuel 22",text:"Tuhan menjadi batu karang dan perlindungan bagi orang yang berseru kepada-Nya."},
+{ref:"1 Raja-raja 19",text:"Di saat kelelahan, Tuhan memulihkan dengan kelembutan dan kehadiran-Nya."},
+{ref:"2 Tawarikh 20",text:"Peperangan ini bukan milikmu, tetapi milik Tuhan."},
+{ref:"Ayub 19",text:"Di tengah penderitaan, pengharapan tetap ada karena Penebus hidup."},
+{ref:"Amsal 3",text:"Percayalah kepada Tuhan dengan segenap hati, Ia meluruskan setiap jalanmu."},
+{ref:"Pengkhotbah 3",text:"Segala sesuatu ada waktunya dalam rencana Tuhan yang indah."},
+{ref:"Yesaya 9",text:"Terang Tuhan bersinar di tengah kegelapan dan membawa pengharapan."},
+{ref:"Yesaya 40",text:"Orang yang menanti Tuhan memperoleh kekuatan baru."},
+{ref:"Yesaya 41",text:"Jangan takut, Tuhan menyertai dan memegang tanganmu."},
+{ref:"Yesaya 43",text:"Engkau berharga dan dikasihi Tuhan."},
+{ref:"Yeremia 29",text:"Tuhan memberi masa depan yang penuh harapan."},
+{ref:"Ratapan 3",text:"Kasih setia Tuhan selalu baru setiap pagi."},
+{ref:"Yehezkiel 36",text:"Tuhan memberi hati yang baru dan roh yang diperbarui."},
+{ref:"Daniel 6",text:"Kesetiaan kepada Tuhan mendatangkan perlindungan-Nya."},
+{ref:"Mikha 6",text:"Tuhan menghendaki hidup dalam keadilan, kesetiaan, dan kerendahan hati."},
+{ref:"Zakharia 4",text:"Bukan dengan kekuatan manusia, melainkan oleh Roh Tuhan."},
 
-{ref:"Yesaya 26",text:"Tuhan menjaga damai sejahtera bagi yang berharap kepada-Nya."},
-{ref:"Yesaya 40",text:"Mereka yang menanti Tuhan memperoleh kekuatan baru."},
-{ref:"Yesaya 41",text:"Jangan takut, Tuhan menyertai dan meneguhkanmu."},
-{ref:"Yesaya 43",text:"Engkau berharga di mata Tuhan dan dikasihi-Nya."},
-{ref:"Yesaya 49",text:"Tuhan tidak pernah melupakan umat-Nya."},
-{ref:"Yesaya 54",text:"Kasih Tuhan tidak akan beranjak darimu."},
-{ref:"Yesaya 55",text:"Firman Tuhan menggenapi tujuan-Nya."},
-{ref:"Yeremia 29",text:"Tuhan memberi masa depan penuh harapan."},
-{ref:"Ratapan 3",text:"Kasih Tuhan selalu baru setiap pagi."},
-
-{ref:"Matius 5",text:"Hidup dalam terang Tuhan membuat hidup berdampak."},
-{ref:"Matius 6",text:"Tuhan mengetahui kebutuhanmu sebelum engkau memintanya."},
-{ref:"Matius 7",text:"Mintalah, carilah, ketoklah—Tuhan menjawab."},
-{ref:"Matius 11",text:"Yesus memberi kelegaan bagi yang letih."},
-{ref:"Matius 28",text:"Yesus menyertai setiap langkah hidup."},
-
-{ref:"Yohanes 1",text:"Firman Tuhan membawa terang dan hidup."},
-{ref:"Yohanes 3",text:"Kasih Allah membawa keselamatan."},
-{ref:"Yohanes 8",text:"Yesus adalah terang dunia."},
+{ref:"Matius 5",text:"Hidup yang berkenan kepada Tuhan menjadi terang bagi dunia."},
+{ref:"Matius 6",text:"Carilah dahulu Kerajaan Allah, maka kebutuhanmu akan dicukupkan."},
+{ref:"Matius 11",text:"Yesus memberi kelegaan bagi yang letih dan berbeban berat."},
+{ref:"Matius 28",text:"Yesus menyertai sampai akhir zaman."},
+{ref:"Yohanes 1",text:"Firman menjadi manusia dan membawa terang serta hidup."},
 {ref:"Yohanes 10",text:"Yesus memberi hidup yang berkelimpahan."},
-{ref:"Yohanes 14",text:"Yesus adalah jalan menuju Bapa."},
-{ref:"Yohanes 15",text:"Tinggallah di dalam Kristus dan berbuahlah."},
-
-{ref:"Roma 5",text:"Damai sejahtera datang melalui iman kepada Kristus."},
+{ref:"Yohanes 14",text:"Yesus adalah jalan, kebenaran, dan hidup."},
+{ref:"Kisah Para Rasul 1",text:"Roh Kudus memberi kuasa untuk menjadi saksi Kristus."},
 {ref:"Roma 8",text:"Tidak ada yang dapat memisahkan kita dari kasih Allah."},
-{ref:"Roma 12",text:"Hidupmu adalah persembahan bagi Tuhan."},
-
-{ref:"1 Korintus 13",text:"Kasih sejati tidak pernah berakhir."},
-{ref:"2 Korintus 4",text:"Dalam kelemahan, kuasa Tuhan nyata."},
-{ref:"2 Korintus 5",text:"Di dalam Kristus, hidup menjadi baru."},
-
-{ref:"Galatia 2",text:"Aku hidup oleh iman kepada Kristus."},
-{ref:"Galatia 5",text:"Hidup oleh Roh menghasilkan buah kebaikan."},
-{ref:"Efesus 2",text:"Kita diselamatkan oleh anugerah dan dipanggil untuk hidup benar."},
-{ref:"Efesus 6",text:"Kuatlah di dalam Tuhan dan kuasa-Nya."},
-
-{ref:"Filipi 1",text:"Tuhan menyelesaikan pekerjaan baik yang Ia mulai."},
-{ref:"Filipi 4",text:"Damai Tuhan menjaga hati dan pikiran."},
-
-{ref:"Kolose 3",text:"Hidupmu tersembunyi bersama Kristus."},
-{ref:"1 Tesalonika 5",text:"Bersukacita, berdoa, dan bersyukur senantiasa."},
-{ref:"2 Timotius 1",text:"Tuhan memberi roh keberanian, bukan ketakutan."},
-{ref:"Ibrani 11",text:"Iman adalah dasar pengharapan."},
-{ref:"Yakobus 1",text:"Tuhan memberi hikmat kepada yang meminta."},
-{ref:"1 Petrus 5",text:"Serahkan kekhawatiranmu kepada Tuhan."},
-{ref:"1 Yohanes 4",text:"Allah adalah kasih."},
-{ref:"Wahyu 21",text:"Tuhan menghapus air mata dan memberi hidup baru."}
+{ref:"1 Korintus 15",text:"Di dalam Kristus ada kemenangan atas maut."},
+{ref:"2 Korintus 12",text:"Dalam kelemahan, kuasa Tuhan menjadi sempurna."},
+{ref:"Galatia 6",text:"Apa yang ditabur dengan setia akan dituai pada waktunya."},
+{ref:"Efesus 3",text:"Tuhan sanggup melakukan jauh lebih besar dari yang kita doakan."},
+{ref:"Filipi 4",text:"Damai sejahtera Tuhan menjaga hati dan pikiran."},
+{ref:"Kolose 1",text:"Segala sesuatu ada dan dipersatukan di dalam Kristus."},
+{ref:"Ibrani 12",text:"Tetaplah berlari dengan tekun dalam iman."},
+{ref:"Yakobus 1",text:"Ujian iman menghasilkan ketekunan dan kedewasaan."},
+{ref:"1 Petrus 5",text:"Serahkanlah segala kekhawatiranmu kepada Tuhan."},
+{ref:"1 Yohanes 4",text:"Allah adalah kasih, dan kasih-Nya sempurna."},
+{ref:"Yudas 1",text:"Tuhan sanggup memelihara kita sampai akhir."},
+{ref:"Wahyu 21",text:"Tuhan menghapus setiap air mata dan menghadirkan hidup yang baru."}
 ];
 
 /* ================== LOGIC (TIDAK DIUBAH) ================== */
