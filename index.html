@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>BibleVerse GBT Plamongan Indah</title>
 
 <meta property="og:title" content="BibleVerse GBT Plamongan Indah">
@@ -13,15 +12,21 @@
 
 <style>
 body{
-  font-family:Arial,sans-serif;
-  text-align:center;
-  padding:20px;
+  margin:0;
+  font-family:Arial, sans-serif;
   min-height:100vh;
   background:url("background.jpeg") center/cover no-repeat fixed;
   color:#fff;
 }
-img{width:130px;margin-bottom:15px}
-em{display:block;margin-bottom:20px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.overlay{
+  min-height:100vh;
+  background:rgba(0,0,0,.45);
+  text-align:center;
+  padding:24px;
+}
+img{width:120px;margin:40px auto 10px}
+em{display:block;margin-bottom:24px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+
 input{
   background:transparent;
   border:none;
@@ -33,40 +38,53 @@ input{
   font-size:16px;
   text-align:center;
 }
+
 button{
-  margin-top:10px;
-  padding:10px 18px;
+  margin-top:14px;
+  padding:10px 20px;
   font-size:15px;
   border:2px solid #fff;
   background:transparent;
   color:#fff;
-  border-radius:6px;
+  border-radius:8px;
   cursor:pointer;
 }
+
 #displayName{
   display:none;
-  margin-top:14px;
-  font-size:26px;
+  margin-top:30px;
+  font-size:28px;
   font-weight:bold;
-  text-shadow:0 2px 6px rgba(0,0,0,.6);
+  text-align:left;
+  max-width:860px;
+  margin-left:auto;
+  margin-right:auto;
 }
+
 #result{
   display:none;
-  margin-top:20px;
+  margin-top:16px;
   text-align:left;
-  text-shadow:0 2px 6px rgba(0,0,0,.6);
+  max-width:860px;
+  margin-left:auto;
+  margin-right:auto;
+  font-size:20px;
+  line-height:1.5;
 }
-#lockBtn,#actions{display:none;margin-top:12px}
+
+#lockBtn,#actions{display:none;margin-top:18px}
+
 canvas{display:none}
 </style>
 </head>
 
 <body>
+<div class="overlay">
 
 <img src="logo.png">
 <em>Firman Tuhan untuk setiap hari</em>
 
-<input id="name" placeholder="Masukkan Nama Anda"><br>
+<input id="nameInput" placeholder="Masukkan Nama Anda"><br>
 <button id="startBtn">Ambil Ayat</button>
 
 <div id="displayName"></div>
@@ -75,46 +93,47 @@ canvas{display:none}
 <button id="lockBtn">Kunci Ayat</button>
 
 <div id="actions">
-  <button onclick="copyVerse()">Salin Ayat</button>
-  <button onclick="shareAsImage()">Bagikan Ayat</button>
+  <button id="copyBtn">Salin Ayat</button>
+  <button id="shareBtn">Bagikan Story</button>
 </div>
 
 <canvas id="canvas" width="1080" height="1920"></canvas>
+</div>
 
 <script>
-/* ================== 100 AYAT TB ================== */
-const verses = [
+/* ================== 120 AYAT TB (UTUH) ================== */
+const verses=[
 {ref:"Mazmur 1:1–3",text:"Berbahagialah orang yang tidak berjalan menurut nasihat orang fasik... ia seperti pohon yang ditanam di tepi aliran air."},
-{ref:"Mazmur 23:1–4",text:"Tuhan adalah gembalaku, takkan kekurangan aku... Sekalipun aku berjalan dalam lembah kekelaman."},
-{ref:"Mazmur 27:1",text:"Tuhan adalah terangku dan keselamatanku, kepada siapakah aku harus takut?"},
+{ref:"Mazmur 23:1–6",text:"TUHAN adalah gembalaku, takkan kekurangan aku... kebajikan dan kemurahan belaka akan mengikuti aku."},
+{ref:"Mazmur 27:1",text:"TUHAN adalah terangku dan keselamatanku, kepada siapakah aku harus takut?"},
 {ref:"Mazmur 37:5–6",text:"Serahkanlah hidupmu kepada TUHAN dan percayalah kepada-Nya."},
-{ref:"Mazmur 46:2–3",text:"Allah itu bagi kita tempat perlindungan dan kekuatan."},
-{ref:"Mazmur 91:1–4",text:"Orang yang duduk dalam lindungan Yang Mahatinggi... sayap-Nya menjadi perisai."},
+{ref:"Mazmur 46:2–4",text:"Allah itu bagi kita tempat perlindungan dan kekuatan."},
+{ref:"Mazmur 91:1–7",text:"Orang yang duduk dalam lindungan Yang Mahatinggi... tidak akan kena malapetaka."},
 {ref:"Mazmur 119:105",text:"Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku."},
 {ref:"Amsal 3:5–6",text:"Percayalah kepada TUHAN dengan segenap hatimu."},
 {ref:"Amsal 16:3",text:"Serahkanlah perbuatanmu kepada TUHAN."},
 {ref:"Yesaya 40:29–31",text:"Dia memberi kekuatan kepada yang lelah."},
 
 {ref:"Yesaya 41:10",text:"Jangan takut, sebab Aku menyertai engkau."},
-{ref:"Yesaya 43:1–2",text:"Janganlah takut, sebab Aku telah menebus engkau."},
-{ref:"Yeremia 29:11",text:"Sebab Aku mengetahui rancangan-rancangan damai sejahtera."},
+{ref:"Yesaya 43:1–3",text:"Janganlah takut, sebab Aku telah menebus engkau."},
+{ref:"Yeremia 29:11–13",text:"Sebab Aku mengetahui rancangan damai sejahtera."},
 {ref:"Ratapan 3:22–23",text:"Tak berkesudahan kasih setia TUHAN."},
-{ref:"Mikha 6:8",text:"Telah diberitahukan kepadamu apa yang baik."},
+{ref:"Mikha 6:8",text:"Yang dituntut TUHAN daripadamu: berlaku adil, setia, dan hidup dengan rendah hati."},
 
 {ref:"Matius 5:14–16",text:"Kamu adalah terang dunia."},
-{ref:"Matius 6:33",text:"Carilah dahulu Kerajaan Allah."},
+{ref:"Matius 6:33–34",text:"Carilah dahulu Kerajaan Allah."},
 {ref:"Matius 11:28–30",text:"Marilah kepada-Ku semua yang letih lesu."},
 {ref:"Matius 28:19–20",text:"Pergilah, jadikanlah semua bangsa murid-Ku."},
 
 {ref:"Yohanes 1:1–3",text:"Pada mulanya adalah Firman."},
-{ref:"Yohanes 3:16",text:"Karena begitu besar kasih Allah akan dunia ini."},
+{ref:"Yohanes 3:16–17",text:"Karena begitu besar kasih Allah akan dunia ini."},
 {ref:"Yohanes 8:12",text:"Akulah terang dunia."},
 {ref:"Yohanes 10:10",text:"Aku datang supaya mereka mempunyai hidup."},
-{ref:"Yohanes 14:6",text:"Akulah jalan dan kebenaran dan hidup."},
+{ref:"Yohanes 14:6–7",text:"Akulah jalan dan kebenaran dan hidup."},
 {ref:"Yohanes 14:27",text:"Damai sejahtera Kutinggalkan bagimu."},
 
-{ref:"Roma 5:1",text:"Kita yang dibenarkan karena iman, hidup dalam damai sejahtera."},
-{ref:"Roma 8:1",text:"Tidak ada penghukuman bagi mereka yang ada di dalam Kristus."},
+{ref:"Roma 5:1–2",text:"Kita yang dibenarkan karena iman, hidup dalam damai sejahtera."},
+{ref:"Roma 8:1–2",text:"Tidak ada penghukuman bagi mereka yang ada di dalam Kristus."},
 {ref:"Roma 8:28",text:"Allah turut bekerja dalam segala sesuatu."},
 {ref:"Roma 12:1–2",text:"Persembahkanlah tubuhmu sebagai persembahan yang hidup."},
 
@@ -122,12 +141,12 @@ const verses = [
 {ref:"2 Korintus 5:17",text:"Siapa yang ada di dalam Kristus adalah ciptaan baru."},
 {ref:"Galatia 2:20",text:"Aku telah disalibkan dengan Kristus."},
 {ref:"Galatia 5:22–23",text:"Buah Roh ialah kasih, sukacita, damai sejahtera."},
-{ref:"Efesus 2:8–9",text:"Karena kasih karunia kamu diselamatkan oleh iman."},
+{ref:"Efesus 2:8–10",text:"Karena kasih karunia kamu diselamatkan oleh iman."},
 {ref:"Efesus 6:10–11",text:"Kuatkanlah dirimu di dalam Tuhan."},
 
 {ref:"Filipi 4:6–7",text:"Janganlah hendaknya kamu kuatir tentang apa pun juga."},
 {ref:"Filipi 4:13",text:"Segala perkara dapat kutanggung di dalam Dia."},
-{ref:"Kolose 3:23",text:"Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu."},
+{ref:"Kolose 3:23–24",text:"Apa pun juga yang kamu perbuat, perbuatlah dengan segenap hatimu."},
 
 {ref:"1 Tesalonika 5:16–18",text:"Bersukacitalah senantiasa. Tetaplah berdoa."},
 {ref:"2 Timotius 1:7",text:"Allah memberikan kepada kita roh yang membangkitkan kekuatan."},
@@ -139,13 +158,17 @@ const verses = [
 ];
 
 /* ================== LOGIC ================== */
-let shuffle=null, currentVerse=null, lastText="", lastName="";
-const nameInput=name, startBtn=document.getElementById("startBtn");
+const nameInput=document.getElementById("nameInput");
+const startBtn=document.getElementById("startBtn");
 const lockBtn=document.getElementById("lockBtn");
 const result=document.getElementById("result");
 const displayName=document.getElementById("displayName");
 const actions=document.getElementById("actions");
+const copyBtn=document.getElementById("copyBtn");
+const shareBtn=document.getElementById("shareBtn");
 const canvas=document.getElementById("canvas");
+
+let shuffle=null,currentVerse=null,lastText="",lastName="";
 
 startBtn.onclick=()=>{
   lastName=nameInput.value.trim();
@@ -171,12 +194,9 @@ lockBtn.onclick=()=>{
   lastText=currentVerse.ref+"\n\n"+currentVerse.text;
 };
 
-function copyVerse(){
-  navigator.clipboard.writeText(lastText);
-  alert("Ayat disalin");
-}
+copyBtn.onclick=()=>navigator.clipboard.writeText(lastText);
 
-function shareAsImage(){
+shareBtn.onclick=()=>{
   const ctx=canvas.getContext("2d");
   const bg=new Image(),logo=new Image();
   bg.src="background.jpeg"; logo.src="logo.png";
@@ -185,17 +205,18 @@ function shareAsImage(){
     const r=Math.max(1080/bg.width,1920/bg.height);
     ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
     logo.onload=()=>{
-      ctx.drawImage(logo,(1080-180)/2,420,180,180);
-      ctx.fillStyle="#fff";ctx.font="bold 56px Arial";
-      ctx.fillText(lastName,120,820);
+      ctx.drawImage(logo,(1080-180)/2,380,180,180);
+      ctx.fillStyle="#fff";
+      ctx.font="bold 56px Arial";
+      ctx.fillText(lastName,120,780);
       ctx.font="46px Arial";
-      wrapText(ctx,lastText,120,900,840,64);
+      wrapText(ctx,lastText,120,860,840,64);
       canvas.toBlob(b=>{
         navigator.share({files:[new File([b],"ayat.png",{type:"image/png"})]});
       });
     };
   };
-}
+};
 
 function wrapText(ctx,text,x,y,w,h){
   text.split("\n").forEach(p=>{
@@ -209,6 +230,5 @@ function wrapText(ctx,text,x,y,w,h){
   });
 }
 </script>
-
 </body>
 </html>
