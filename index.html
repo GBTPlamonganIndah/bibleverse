@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 
 <style>
-  #tapHint{
+#tapHint{
   display:none;
   margin-top:18px;
   font-size:14px;
@@ -19,7 +19,6 @@
   cursor:pointer;
 }
 #result{cursor:pointer}
-
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -37,7 +36,6 @@ body{
 }
 img{width:120px;margin-top:30px}
 em{margin:16px 0 28px;text-shadow:0 2px 6px rgba(0,0,0,.6)}
-
 input{
   background:transparent;
   border:none;
@@ -84,9 +82,7 @@ button{
   margin:auto;
   padding:0 24px;
 }
-#ambilLagi{
-  border-radius:999px;
-}
+#ambilLagi{border-radius:999px}
 canvas{display:none}
 </style>
 </head>
@@ -102,7 +98,7 @@ canvas{display:none}
 
 <div id="displayName"></div>
 <div id="result"></div>
-<div id="tapHint">Tekan untuk ambil Ayat</div>
+<div id="tapHint">Tekan untuk memilih Ayat</div>
 
 <div id="actions">
   <button id="shareBtn">📤 Bagikan Ayat</button>
@@ -113,85 +109,209 @@ canvas{display:none}
 </div>
 
 <script>
-/* ================== AYAT MOTIVASI ALKITABIAH (PARAFRASE INDONESIA) ================== */
-const VERSES=[
-{ref:"Mazmur 1",text:"Orang yang hidup menurut jalan Tuhan akan berakar kuat seperti pohon di tepi aliran air dan menghasilkan buah pada waktunya."},
-{ref:"Mazmur 3",text:"Tuhan adalah perisaiku. Ia mengangkat kepalaku dan memberiku keberanian saat aku tertekan."},
-{ref:"Mazmur 4",text:"Di tengah kegelisahan, Tuhan memberiku ketenangan dan istirahat yang aman."},
-{ref:"Mazmur 5",text:"Tuhan menuntun langkah orang benar dan melingkupinya dengan kasih setia."},
-{ref:"Mazmur 8",text:"Tuhan memahkotai manusia dengan kemuliaan dan kehormatan."},
-{ref:"Mazmur 16",text:"Hidupku aman karena aku menempatkan Tuhan sebagai pusat segalanya."},
-{ref:"Mazmur 18",text:"Tuhan adalah kekuatanku dan tempat perlindunganku."},
-{ref:"Mazmur 19",text:"Firman Tuhan menyegarkan jiwa dan memberi hikmat."},
-{ref:"Mazmur 23",text:"Tuhan menuntun dan memeliharaku bahkan di lembah tergelap."},
-{ref:"Mazmur 27",text:"Tuhan adalah terang dan keselamatanku; aku tidak perlu takut."},
-{ref:"Mazmur 32",text:"Tuhan melindungi dan mengajar orang yang berharap kepada-Nya."},
-{ref:"Mazmur 34",text:"Tuhan mendengar seruan orang yang mencari-Nya dan membebaskan mereka."},
-{ref:"Mazmur 37",text:"Percayalah kepada Tuhan, Ia akan bertindak."},
-{ref:"Mazmur 40",text:"Tuhan mengangkatku dari keputusasaan dan menaruh nyanyian baru di mulutku."},
-{ref:"Mazmur 46",text:"Tuhan adalah perlindungan dan kekuatan dalam kesesakan."},
-{ref:"Mazmur 55",text:"Serahkanlah bebanmu kepada Tuhan, Ia menopangmu."},
-{ref:"Mazmur 62",text:"Jiwaku tenang di hadapan Tuhan, sumber keselamatanku."},
-{ref:"Mazmur 66",text:"Tuhan memelihara hidup dan tidak membiarkan kakiku goyah."},
-{ref:"Mazmur 73",text:"Sekalipun aku lemah, Tuhan tetap menjadi bagianku."},
-{ref:"Mazmur 84",text:"Satu hari bersama Tuhan lebih berharga dari ribuan hari lainnya."},
-{ref:"Mazmur 91",text:"Tuhan menaungi dan melindungi orang yang berlindung kepada-Nya."},
-{ref:"Mazmur 94",text:"Saat aku hampir jatuh, kasih Tuhan menopang dan meneguhkan aku."},
-{ref:"Mazmur 100",text:"Datanglah kepada Tuhan dengan syukur, sebab kasih setia-Nya kekal."},
-{ref:"Mazmur 103",text:"Tuhan mengampuni segala dosaku dan memulihkan hidupku."},
-{ref:"Mazmur 119",text:"Firman Tuhan menjadi pelita bagi kakiku dan terang bagi jalanku."},
-
-/* === TAMBAHAN LENGKAP KEJADIAN – WAHYU === */
-{ref:"Kejadian 1",text:"Allah menciptakan segala sesuatu dengan teratur dan baik; hidup ini bukan kebetulan, melainkan rancangan-Nya yang penuh tujuan."},
-{ref:"Kejadian 12",text:"Tuhan memanggil dan menuntun langkah iman, menjanjikan masa depan dan berkat melalui ketaatan."},
-{ref:"Kejadian 15",text:"Ketika manusia percaya kepada Tuhan, iman itu diperhitungkan sebagai kebenaran."},
-{ref:"Keluaran 14",text:"Tuhan membuka jalan di tengah jalan buntu dan berperang bagi umat-Nya."},
-{ref:"Ulangan 31",text:"Tuhan berjalan di depanmu, Ia tidak akan meninggalkan atau membiarkanmu."},
-{ref:"Yosua 1",text:"Kuatkan dan teguhkan hatimu, sebab Tuhan menyertai ke mana pun engkau melangkah."},
-{ref:"Hakim-hakim 6",text:"Tuhan memanggil orang biasa menjadi alat-Nya yang luar biasa."},
-{ref:"Rut 2",text:"Kesetiaan dan kerendahan hati membuka jalan bagi pemeliharaan Tuhan."},
-{ref:"1 Samuel 16",text:"Tuhan melihat hati, bukan penampilan luar."},
-{ref:"2 Samuel 22",text:"Tuhan menjadi batu karang dan perlindungan bagi orang yang berseru kepada-Nya."},
-{ref:"1 Raja-raja 19",text:"Di saat kelelahan, Tuhan memulihkan dengan kelembutan dan kehadiran-Nya."},
-{ref:"2 Tawarikh 20",text:"Peperangan ini bukan milikmu, tetapi milik Tuhan."},
-{ref:"Ayub 19",text:"Di tengah penderitaan, pengharapan tetap ada karena Penebus hidup."},
-{ref:"Amsal 3",text:"Percayalah kepada Tuhan dengan segenap hati, Ia meluruskan setiap jalanmu."},
-{ref:"Pengkhotbah 3",text:"Segala sesuatu ada waktunya dalam rencana Tuhan yang indah."},
-{ref:"Yesaya 9",text:"Terang Tuhan bersinar di tengah kegelapan dan membawa pengharapan."},
-{ref:"Yesaya 40",text:"Orang yang menanti Tuhan memperoleh kekuatan baru."},
-{ref:"Yesaya 41",text:"Jangan takut, Tuhan menyertai dan memegang tanganmu."},
-{ref:"Yesaya 43",text:"Engkau berharga dan dikasihi Tuhan."},
-{ref:"Yeremia 29",text:"Tuhan memberi masa depan yang penuh harapan."},
-{ref:"Ratapan 3",text:"Kasih setia Tuhan selalu baru setiap pagi."},
-{ref:"Yehezkiel 36",text:"Tuhan memberi hati yang baru dan roh yang diperbarui."},
-{ref:"Daniel 6",text:"Kesetiaan kepada Tuhan mendatangkan perlindungan-Nya."},
-{ref:"Mikha 6",text:"Tuhan menghendaki hidup dalam keadilan, kesetiaan, dan kerendahan hati."},
-{ref:"Zakharia 4",text:"Bukan dengan kekuatan manusia, melainkan oleh Roh Tuhan."},
-
-{ref:"Matius 5",text:"Hidup yang berkenan kepada Tuhan menjadi terang bagi dunia."},
-{ref:"Matius 6",text:"Carilah dahulu Kerajaan Allah, maka kebutuhanmu akan dicukupkan."},
-{ref:"Matius 11",text:"Yesus memberi kelegaan bagi yang letih dan berbeban berat."},
-{ref:"Matius 28",text:"Yesus menyertai sampai akhir zaman."},
-{ref:"Yohanes 1",text:"Firman menjadi manusia dan membawa terang serta hidup."},
-{ref:"Yohanes 10",text:"Yesus memberi hidup yang berkelimpahan."},
-{ref:"Yohanes 14",text:"Yesus adalah jalan, kebenaran, dan hidup."},
-{ref:"Kisah Para Rasul 1",text:"Roh Kudus memberi kuasa untuk menjadi saksi Kristus."},
-{ref:"Roma 8",text:"Tidak ada yang dapat memisahkan kita dari kasih Allah."},
-{ref:"1 Korintus 15",text:"Di dalam Kristus ada kemenangan atas maut."},
-{ref:"2 Korintus 12",text:"Dalam kelemahan, kuasa Tuhan menjadi sempurna."},
-{ref:"Galatia 6",text:"Apa yang ditabur dengan setia akan dituai pada waktunya."},
-{ref:"Efesus 3",text:"Tuhan sanggup melakukan jauh lebih besar dari yang kita doakan."},
-{ref:"Filipi 4",text:"Damai sejahtera Tuhan menjaga hati dan pikiran."},
-{ref:"Kolose 1",text:"Segala sesuatu ada dan dipersatukan di dalam Kristus."},
-{ref:"Ibrani 12",text:"Tetaplah berlari dengan tekun dalam iman."},
-{ref:"Yakobus 1",text:"Ujian iman menghasilkan ketekunan dan kedewasaan."},
-{ref:"1 Petrus 5",text:"Serahkanlah segala kekhawatiranmu kepada Tuhan."},
-{ref:"1 Yohanes 4",text:"Allah adalah kasih, dan kasih-Nya sempurna."},
-{ref:"Yudas 1",text:"Tuhan sanggup memelihara kita sampai akhir."},
-{ref:"Wahyu 21",text:"Tuhan menghapus setiap air mata dan menghadirkan hidup yang baru."}
+const VERSES = [
+  {ref: "Yesaya 40:31", text: "tetapi orang-orang yang menanti-nantikan TUHAN mendapat kekuatan baru: mereka seumpama rajawali yang naik terbang dengan kekuatan sayapnya; mereka berlari dan tidak menjadi lesu, mereka berjalan dan tidak menjadi lelah."},
+    {ref: "Mazmur 27:1", text: "TUHAN adalah terangku dan keselamatanku, kepada siapakah aku harus takut? TUHAN adalah benteng hidupku, kepada siapakah aku harus gemetar?"},
+    {ref: "Mazmur 46:2", text: "Allah itu bagi kita tempat perlindungan dan kekuatan, sebagai penolong dalam kesesakan sangat terbukti."},
+    {ref: "Yosua 1:9", text: "Bukankah telah Kuperintahkan kepadamu: kuatkan dan teguhkanlah hatimu? Janganlah kecut dan tawar hati, sebab TUHAN, Allahmu, menyertai engkau, ke manapun engkau pergi."},
+    {ref: "Mazmur 34:20", text: "Orang benar itu banyak mengalami kemalangan, tetapi TUHAN melepaskan dia dari semuanya itu."},
+    {ref: "Yesaya 41:10", text: "Janganlah takut, sebab Aku menyertai engkau, janganlah bimbang, sebab Aku ini Allahmu; Aku akan meneguhkan, bahkan akan menolong engkau; Aku akan memegang engkau dengan tangan kanan-Ku yang membawa kemenangan."},
+    {ref: "Mazmur 55:23", text: "Serahkanlah kuatirmu kepada TUHAN, maka Ia akan memelihara engkau! Tidak untuk selama-lamanya dibiarkan-Nya orang benar itu goyah."},
+    {ref: "Ratapan 3:22–23", text: "Tak berkesudahan kasih setia TUHAN, tak habis-habisnya rahmat-Nya, selalu baru tiap pagi; besar kesetiaan-Mu!"},
+    {ref: "Mazmur 121:2", text: "Pertolonganku ialah dari TUHAN, yang menjadikan langit dan bumi."},
+    {ref: "Yesaya 26:3", text: "Yang hatinya teguh Kaujagai dengan damai sejahtera, sebab kepada-Mulah ia percaya."},
+    {ref: "Mazmur 118:14", text: "TUHAN itu kekuatanku dan mazmurku; Ia telah menjadi keselamatanku."},
+    {ref: "2 Korintus 4:16", text: "Sebab itu kami tidak tawar hati, tetapi meskipun manusia lahiriah kami semakin merosot, namun manusia batiniah kami dibaharui dari sehari ke sehari."},
+    {ref: "Mazmur 66:19–20", text: "Sesungguhnya, Allah telah mendengarkan; Ia telah memperhatikan doa yang kuucapkan. Terpujilah Allah, yang tidak menolak doaku dan tidak menjauhkan kasih setia-Nya dari padaku."},
+    {ref: "Yesaya 43:2", text: "Apabila engkau menyeberang melalui air, Aku akan menyertai engkau, atau melalui sungai-sungai, engkau tidak akan dihanyutkan; apabila engkau berjalan melalui api, engkau tidak akan dihanguskan, dan nyala api tidak akan membakar engkau."},
+    {ref: "Mazmur 62:7", text: "Hanya pada Allah saja kiranya aku tenang, sebab dari pada-Nyalah harapanku."},
+    {ref: "Roma 8:31", text: "Sebab itu apakah yang akan kita katakan tentang semuanya itu? Jika Allah di pihak kita, siapakah yang akan melawan kita?"},
+    {ref: "Mazmur 138:3", text: "Pada hari aku berseru, Engkau menjawab aku, Engkau menambahkan kekuatan dalam jiwaku."},
+    {ref: "Yesaya 12:2", text: "Sungguh, Allah itu keselamatanku; aku percaya dengan tidak gemetar, sebab TUHAN ALLAH itu kekuatanku dan mazmurku; Ia telah menjadi keselamatanku."},
+    {ref: "Mazmur 23:4", text: "Sekalipun aku berjalan dalam lembah kekelaman, aku tidak takut bahaya, sebab Engkau besertaku; gada-Mu dan tongkat-Mu, itulah yang menghibur aku."},
+    {ref: "Ibrani 13:6", text: "Sebab itu dengan yakin kita dapat berkata: “Tuhan adalah penolongku. Aku tidak akan takut. Apakah yang dapat dilakukan manusia terhadap aku?”"},
+    {ref: "Amsal 3:5–6", text: "Percayalah kepada TUHAN dengan segenap hatimu, dan janganlah bersandar kepada pengertianmu sendiri. Akuilah Dia dalam segala lakumu, maka Ia akan meluruskan jalanmu."},
+    {ref: "Markus 11:24", text: "Karena itu Aku berkata kepadamu: Apa saja yang kamu minta dan doakan, percayalah bahwa kamu telah menerimanya, maka hal itu akan diberikan kepadamu."},
+    {ref: "Roma 10:17", text: "Jadi, iman timbul dari pendengaran, dan pendengaran oleh firman Kristus."},
+    {ref: "Ibrani 11:1", text: "Iman adalah dasar dari segala sesuatu yang kita harapkan dan bukti dari segala sesuatu yang tidak kita lihat."},
+    {ref: "Mazmur 37:5", text: "Serahkanlah hidupmu kepada TUHAN dan percayalah kepada-Nya, dan Ia akan bertindak."},
+    {ref: "Matius 17:20", text: "Ia berkata kepada mereka: “Karena kamu kurang percaya. Sebab Aku berkata kepadamu: Sesungguhnya sekiranya kamu mempunyai iman sebesar biji sesawi saja kamu dapat berkata kepada gunung ini: Pindah dari tempat ini ke sana, maka gunung ini akan pindah, dan takkan ada yang mustahil bagimu.”"},
+    {ref: "Yakobus 1:6", text: "Hendaklah ia memintanya dalam iman, dan sama sekali jangan bimbang, sebab orang yang bimbang sama dengan gelombang laut, yang diombang-ambingkan kian ke mari oleh angin."},
+    {ref: "Mazmur 20:8", text: "Orang ini memegahkan kereta dan orang itu memegahkan kuda, tetapi kita bermegah dalam nama TUHAN, Allah kita."},
+    {ref: "2 Korintus 5:7", text: "Sebab hidup kami ini adalah hidup karena percaya, bukan karena melihat."},
+    {ref: "Mazmur 9:11", text: "Orang-orang yang mengenal nama-Mu percaya kepada-Mu, sebab Engkau tidak meninggalkan orang-orang yang mencari Engkau, ya TUHAN."},
+    {ref: "Roma 1:17", text: "Sebab di dalamnya nyata kebenaran Allah, yang bertolak dari iman dan memimpin kepada iman, seperti ada tertulis: “Orang benar akan hidup oleh iman.”"},
+    {ref: "Mazmur 56:4", text: "Waktu aku takut, aku ini percaya kepada-Mu."},
+    {ref: "Ibrani 10:23", text: "Marilah kita teguh berpegang pada pengakuan tentang pengharapan kita, sebab Ia, yang menjanjikannya, setia."},
+    {ref: "Yesaya 7:9b", text: "Jika kamu tidak percaya, sungguh, kamu tidak akan teguh jaya."},
+    {ref: "Mazmur 125:1", text: "Orang-orang yang percaya kepada TUHAN adalah seperti gunung Sion yang tidak goyang, yang tetap untuk selama-lamanya."},
+    {ref: "Matius 21:22", text: "Dan apa saja yang kamu minta dalam doa dengan penuh kepercayaan, kamu akan menerimanya."},
+    {ref: "Lukas 1:37", text: "Sebab bagi Allah tidak ada yang mustahil."},
+    {ref: "Roma 4:20–21", text: "Tetapi terhadap janji Allah ia tidak bimbang karena ketidakpercayaan, malah ia diperkuat dalam imannya dan ia memuliakan Allah, dengan penuh keyakinan, bahwa Allah berkuasa untuk melaksanakan apa yang telah Ia janjikan."},
+    {ref: "Mazmur 112:7", text: "Ia tidak takut kepada kabar celaka; hatinya tetap percaya, bersandar kepada TUHAN."},
+    {ref: "Ibrani 6:19", text: "Pengharapan itu adalah sauh yang kuat dan aman bagi jiwa kita, yang telah dilabuhkan sampai ke belakang tabir."},
+    {ref: "Yohanes 3:16", text: "Karena begitu besar kasih Allah akan dunia ini, sehingga Ia telah mengaruniakan Anak-Nya yang tunggal, supaya setiap orang yang percaya kepada-Nya tidak binasa, melainkan beroleh hidup yang kekal."},
+    {ref: "Roma 8:38–39", text: "Sebab aku yakin, bahwa baik maut, maupun hidup, baik malaikat-malaikat, maupun pemerintah-pemerintah, baik yang ada sekarang, maupun yang akan datang, atau kuasa-kuasa, baik yang di atas, maupun yang di bawah, ataupun sesuatu makhluk lain, tidak akan dapat memisahkan kita dari kasih Allah, yang ada dalam Kristus Yesus, Tuhan kita."},
+    {ref: "Mazmur 147:3", text: "Ia menyembuhkan orang-orang yang patah hati dan membalut luka-luka mereka."},
+    {ref: "Yohanes 14:27", text: "Damai sejahtera Kutinggalkan bagimu. Damai sejahtera-Ku Kuberikan kepadamu, dan apa yang Kuberikan tidak seperti yang diberikan oleh dunia kepadamu. Janganlah gelisah dan gentar hatimu."},
+    {ref: "1 Petrus 5:7", text: "Serahkanlah segala kekuatiranmu kepada-Nya, sebab Ia yang memelihara kamu."},
+    {ref: "Mazmur 103:8", text: "TUHAN adalah penyayang dan pengasih, panjang sabar dan berlimpah kasih setia."},
+    {ref: "2 Korintus 1:3–4", text: "Terpujilah Allah dan Bapa Tuhan kita Yesus Kristus, Bapa segala penghiburan, yang menghiburkan kami dalam segala penderitaan kami, sehingga kami sanggup menghibur mereka, yang berada dalam bermacam-macam penderitaan dengan penghiburan yang kami sendiri terima dari Allah."},
+    {ref: "Mazmur 34:19", text: "TUHAN itu dekat kepada orang-orang yang patah hati, dan Ia menyelamatkan orang-orang yang remuk jiwanya."},
+    {ref: "Yesaya 54:10", text: "Sebab biarpun gunung-gunung beranjak dan bukit-bukit bergoyang, tetapi kasih setia-Ku tidak akan beranjak dari padamu, dan perjanjian damai-Ku tidak akan bergoyang, firman TUHAN, yang mengasihani engkau."},
+    {ref: "Roma 15:13", text: "Semoga Allah, sumber pengharapan, memenuhi kamu dengan segala sukacita dan damai sejahtera dalam iman kamu, supaya oleh kekuatan Roh Kudus kamu berlimpah-limpah dalam pengharapan."},
+    {ref: "Mazmur 16:11", text: "Engkau memberitahukan kepadaku jalan kehidupan; di hadapan-Mu ada sukacita berlimpah-limpah, di tangan kanan-Mu ada nikmat senantiasa."},
+    {ref: "Kolose 3:15", text: "Hendaklah damai sejahtera Kristus memerintah dalam hatimu, karena untuk itulah kamu telah dipanggil menjadi satu tubuh. Dan bersyukurlah."},
+    {ref: "Yesaya 61:1", text: "Roh Tuhan ALLAH ada padaku, oleh karena TUHAN telah mengurapi aku; Ia telah mengutus aku untuk menyampaikan kabar baik kepada orang-orang sengsara dan merawat orang-orang yang remuk hati, untuk memberitakan pembebasan kepada orang-orang tawanan, dan kepada orang-orang yang terkurung kelepasan dari penjara."},
+    {ref: "Mazmur 30:6", text: "Pada waktu petang datanglah tangisan, pada waktu pagi terdengar sorak-sorai."},
+    {ref: "Yohanes 16:33", text: "Semuanya itu Kukatakan kepadamu, supaya kamu beroleh damai sejahtera dalam Aku. Dalam dunia kamu menderita penganiayaan, tetapi kuatkanlah hatimu, Aku telah mengalahkan dunia."},
+    {ref: "Mazmur 119:50", text: "Inilah penghiburanku dalam sengsaraku, bahwa janji-Mu menghidupkan aku."},
+    {ref: "Roma 5:5", text: "Dan pengharapan tidak mengecewakan, karena kasih Allah telah dicurahkan di dalam hati kita oleh Roh Kudus yang telah dikaruniakan kepada kita."},
+    {ref: "Yesaya 66:13", text: "Seperti seseorang yang dihibur ibunya, demikianlah Aku akan menghibur kamu."},
+    {ref: "Mazmur 4:9", text: "Dengan tenteram aku mau membaringkan diri, lalu segera tidur, sebab Engkaulah saja, ya TUHAN, yang membuat aku diam dengan aman."},
+    {ref: "1 Yohanes 4:18", text: "Di dalam kasih tidak ada ketakutan: kasih yang sempurna melenyapkan ketakutan."},
+    {ref: "Yeremia 29:11", text: "Sebab Aku ini mengetahui rancangan-rancangan apa yang ada pada-Ku mengenai kamu, demikianlah firman TUHAN, yaitu rancangan damai sejahtera dan bukan rancangan kecelakaan, untuk memberikan kepadamu hari depan yang penuh harapan."},
+    {ref: "Roma 8:28", text: "Kita tahu sekarang, bahwa Allah turut bekerja dalam segala sesuatu untuk mendatangkan kebaikan bagi mereka yang mengasihi Dia, yaitu bagi mereka yang terpanggil sesuai dengan rencana Allah."},
+    {ref: "Filipi 4:13", text: "Segala perkara dapat kutanggung di dalam Dia yang memberi kekuatan kepadaku."},
+    {ref: "2 Timotius 1:7", text: "Sebab Allah memberikan kepada kita bukan roh ketakutan, melainkan roh yang membangkitkan kekuatan, kasih dan ketertiban."},
+    {ref: "Amsal 16:3", text: "Serahkanlah perbuatanmu kepada TUHAN, maka terlaksanalah segala rencanamu."},
+    {ref: "1 Korintus 15:58", text: "Karena itu, saudara-saudaraku yang kekasih, berdirilah teguh, jangan goyah, dan giatlah selalu dalam pekerjaan Tuhan! Sebab kamu tahu, bahwa dalam persekutuan dengan Tuhan jerih payahmu tidak sia-sia."},
+    {ref: "Galatia 6:9", text: "Janganlah kita jemu-jemu berbuat baik, karena apabila sudah datang waktunya, kita akan menuai, jika kita tidak menjadi lemah."},
+    {ref: "Mazmur 37:23–24", text: "TUHAN menetapkan langkah-langkah orang yang hidupnya berkenan kepada-Nya; apabila ia jatuh, tidaklah sampai tergeletak, sebab TUHAN menopang tangannya."},
+    {ref: "Amsal 24:16", text: "Sebab tujuh kali orang benar jatuh, namun ia bangun kembali, tetapi orang fasik akan roboh dalam bencana."},
+    {ref: "Ibrani 12:11", text: "Memang tiap-tiap ganjaran pada waktu ia diberikan tidak mendatangkan sukacita, tetapi dukacita. Tetapi kemudian ia menghasilkan buah kebenaran yang memberikan damai kepada mereka yang dilatih olehnya."},
+    {ref: "Mazmur 1:1–2", text: "Berbahagialah orang yang tidak berjalan menurut nasihat orang fasik, yang tidak berdiri di jalan orang berdosa, dan yang tidak duduk dalam kumpulan pencemooh, tetapi yang kesukaannya ialah Taurat TUHAN, dan yang merenungkan Taurat itu siang dan malam."},
+    {ref: "Yakobus 1:12", text: "Berbahagialah orang yang bertahan dalam pencobaan, sebab apabila ia sudah tahan uji, ia akan menerima mahkota kehidupan yang dijanjikan Allah kepada barangsiapa yang mengasihi Dia."},
+    {ref: "Mazmur 84:6", text: "Berbahagialah manusia yang kekuatannya di dalam Engkau, yang berhasrat mengadakan ziarah."},
+    {ref: "Matius 6:33", text: "Tetapi carilah dahulu Kerajaan Allah dan kebenarannya, maka semuanya itu akan ditambahkan kepadamu."},
+    {ref: "Yesaya 60:1", text: "Bangkitlah, menjadi teranglah, sebab terangmu datang dan kemuliaan TUHAN terbit atasmu."},
+    {ref: "2 Korintus 12:9", text: "Tetapi jawab Tuhan kepadaku: “Cukuplah kasih karunia-Ku bagimu, sebab justru dalam kelemahanlah kuasa-Ku menjadi sempurna.” Sebab itu terlebih suka aku bermegah atas kelemahanku, supaya kuasa Kristus turun menaungi aku."},
+    {ref: "Mazmur 40:2–3", text: "Ia mengangkat aku dari lubang kebinasaan, dari lumpur rawa; Ia menempatkan kakiku di atas bukit batu, menetapkan langkahku, dan memasukkan nyanyian baru dalam mulutku, puji-pujian bagi Allah kita."},
+    {ref: "Amsal 4:18", text: "Tetapi jalan orang benar itu seperti cahaya fajar, yang kian bertambah terang sampai rembang tengah hari."},
+    {ref: "Roma 12:12", text: "Bersukacitalah dalam pengharapan, sabarlah dalam kesesakan, dan bertekunlah dalam doa."},
+    {ref: "Mazmur 126:5", text: "Orang-orang yang menabur dengan mencucurkan air mata, akan menuai dengan sorak-sorai."},
+    {ref: "Filipi 1:6", text: "Akan hal ini aku yakin sepenuhnya, yaitu Ia, yang memulai pekerjaan yang baik di antara kamu, akan meneruskannya sampai pada akhirnya pada hari Kristus Yesus."},
+    {ref: "Yesaya 55:11", text: "Demikianlah firman-Ku yang keluar dari mulut-Ku: ia tidak akan kembali kepada-Ku dengan sia-sia, tetapi ia akan melaksanakan apa yang Kukehendaki, dan akan berhasil dalam apa yang Kusuruhkan kepadanya."},
+    {ref: "Mazmur 145:18", text: "TUHAN dekat kepada semua orang yang berseru kepada-Nya, kepada semua orang yang berseru kepada-Nya dalam kesetiaan."},
+    {ref: "Lukas 9:62", text: "Kata Yesus: “Setiap orang yang siap untuk membajak tetapi menoleh ke belakang, tidak layak untuk Kerajaan Allah.”"},
+    {ref: "Amsal 21:5", text: "Rancangan orang rajin semata-mata mendatangkan kelimpahan, tetapi setiap orang yang tergesa-gesa hanya akan mengalami kekurangan."},
+    {ref: "Mazmur 92:13–14", text: "Orang benar akan bertunas seperti pohon korma, akan tumbuh subur seperti pohon aras di Libanon; mereka yang ditanam di bait TUHAN akan bertunas di pelataran Allah kita."},
+    {ref: "1 Petrus 1:6–7", text: "Bergembiralah akan hal itu, sekalipun sekarang ini kamu seketika harus berdukacita oleh berbagai-bagai pencobaan. Maksud semuanya itu ialah untuk membuktikan kemurnian imanmu — yang jauh lebih tinggi nilainya dari pada emas yang fana."},
+    {ref: "Yesaya 48:17", text: "Beginilah firman TUHAN, Penebusmu, Yang Mahakudus, Allah Israel: “Akulah TUHAN, Allahmu, yang mengajar engkau apa yang memberi faedah, yang menuntun engkau di jalan yang harus kautempuh.”"},
+    {ref: "Mazmur 37:4", text: "Dan bergembiralah karena TUHAN; maka Ia akan memberikan kepadamu apa yang diinginkan hatimu."},
+    {ref: "Efesus 3:20", text: "Bagi Dia, yang dapat melakukan jauh lebih banyak dari pada yang kita doakan atau pikirkan, seperti yang ternyata dari kuasa yang bekerja di dalam kita."},
+    {ref: "Mazmur 84:12", text: "Ya TUHAN semesta alam, berbahagialah manusia yang percaya kepada-Mu!"},
+    {ref: "Roma 14:8", text: "Sebab jika kita hidup, kita hidup untuk Tuhan, dan jika kita mati, kita mati untuk Tuhan. Jadi baik hidup atau mati, kita adalah milik Tuhan."},
+    {ref: "Kolose 2:6–7", text: "Kamu telah menerima Kristus Yesus, Tuhan kita. Karena itu hendaklah hidupmu tetap di dalam Dia. Hendaklah kamu berakar di dalam Dia dan dibangun di atas Dia, hendaklah kamu bertambah teguh dalam iman."},
+    {ref: "Mazmur 73:26", text: "Sekalipun dagingku dan hatiku habis lenyap, gunung batuku dan bagianku tetaplah Allah selama-lamanya."},
+    {ref: "Amsal 18:10", text: "Nama TUHAN adalah menara yang kuat, ke sanalah orang benar berlari dan ia menjadi selamat."},
+    {ref: "2 Tesalonika 3:3", text: "Tetapi Tuhan adalah setia. Ia akan menguatkan hatimu dan memelihara kamu terhadap yang jahat."},
+    {ref: "Mazmur 90:17", text: "Kiranya perkenanan Tuhan, Allah kita, menyertai kita; kiranya pekerjaan tangan kita dibuat-Nya berhasil; ya, pekerjaan tangan kita dibuat-Nya berhasil."},
+    {ref: "Yohanes 15:5", text: "Akulah pokok anggur dan kamulah ranting-rantingnya. Barangsiapa tinggal di dalam Aku dan Aku di dalam dia, ia berbuah banyak, sebab di luar Aku kamu tidak dapat berbuat apa-apa."},
+    {ref: "Mazmur 37:39", text: "Orang-orang benar diselamatkan oleh TUHAN; Ia adalah tempat perlindungan mereka pada waktu kesesakan."},
+    {ref: "Wahyu 21:4", text: "Dan Ia akan menghapus segala air mata dari mata mereka, dan maut tidak akan ada lagi; tidak akan ada lagi perkabungan, atau ratap tangis, atau dukacita, sebab segala sesuatu yang lama itu telah berlalu."},
+  {ref: "Mazmur 18:3", text: "TUHAN, gunung batuku, kubu pertahananku dan penyelamatku, Allahku, gunung batuku, tempat aku berlindung, perisaiku, tanduk keselamatanku, kota bentengku!"},
+    {ref: "Mazmur 91:2", text: "Aku berkata kepada TUHAN: “Tempat perlindunganku dan kubu pertahananku, Allahku, yang kupercayai.”"},
+    {ref: "Mazmur 118:6", text: "TUHAN di pihakku. Aku tidak akan takut. Apakah yang dapat dilakukan manusia terhadap aku?"},
+    {ref: "Yesaya 33:2", text: "Ya TUHAN, kasihilah kami; kepada-Mulah kami menanti-nantikan. Jadilah lengan kami setiap pagi, juga keselamatan kami di waktu kesesakan."},
+    {ref: "Mazmur 28:7", text: "TUHAN adalah kekuatanku dan perisaiku; kepada-Nya hatiku percaya. Aku tertolong sebab itu beria-ria hatiku, dan dengan nyanyianku aku bersyukur kepada-Nya."},
+    {ref: "Mazmur 94:19", text: "Apabila bertambah banyak pikiran dalam batinku, penghiburan-Mu menyenangkan jiwaku."},
+    {ref: "Mazmur 61:4", text: "Biarlah aku diam di dalam kemah-Mu selama-lamanya, berlindung dalam naungan sayap-Mu."},
+    {ref: "Nahum 1:7", text: "TUHAN itu baik; Ia adalah tempat perlindungan pada waktu kesusahan; Ia mengenal orang-orang yang berlindung kepada-Nya."},
+    {ref: "Mazmur 59:10", text: "Allahku dengan kasih setia-Nya akan menyongsong aku, Allah akan membuat aku memandang rendah musuh-musuhku."},
+    {ref: "Mazmur 112:6", text: "Sebab orang benar tidak akan goyah untuk selama-lamanya; ia akan diingat selama-lamanya."},
+    {ref: "Mazmur 121:7–8", text: "TUHAN akan menjaga engkau terhadap segala kecelakaan; Ia akan menjaga nyawamu. TUHAN akan menjaga keluar masukmu, dari sekarang sampai selama-lamanya."},
+    {ref: "Yesaya 30:15", text: "Sebab beginilah firman Tuhan ALLAH, Yang Mahakudus, Allah Israel: “Dengan bertobat dan tinggal diam kamu akan diselamatkan, dalam tinggal tenang dan percaya terletak kekuatanmu.”"},
+    {ref: "Mazmur 33:20", text: "Jiwa kita menanti-nantikan TUHAN; Dialah penolong kita dan perisai kita."},
+    {ref: "Mazmur 63:8", text: "Jiwaku melekat kepada-Mu; tangan kanan-Mu menopang aku."},
+    {ref: "Mazmur 9:10", text: "TUHAN menjadi tempat perlindungan bagi orang yang terinjak, tempat perlindungan pada waktu kesesakan."},
+    {ref: "Mazmur 27:14", text: "Nantikanlah TUHAN! Kuatkanlah dan teguhkanlah hatimu! Ya, nantikanlah TUHAN!"},
+    {ref: "Yesaya 35:4", text: "Katakanlah kepada orang-orang yang tawar hati: “Kuatkanlah hati, jangan takut! Lihat, Allahmu datang dengan pembalasan, dengan ganjaran Allah; Ia sendiri datang menyelamatkan kamu.”"},
+    {ref: "Mazmur 146:5", text: "Berbahagialah orang yang mempunyai Allah Yakub sebagai penolong, yang harapannya pada TUHAN, Allahnya."},
+    {ref: "Mazmur 138:7", text: "Jika aku berjalan di tengah-tengah kesesakan, Engkau menghidupkan aku kembali; Engkau mengulurkan tangan-Mu melawan murka musuhku, dan tangan kanan-Mu menyelamatkan aku."},
+    {ref: "Yesaya 49:16", text: "Lihat, Aku telah melukiskan engkau di telapak tangan-Ku; tembok-tembokmu tetap di ruang mata-Ku."},
+    {ref: "Mazmur 130:5", text: "Aku menanti-nantikan TUHAN, jiwaku menanti-nanti, dan aku mengharapkan firman-Nya."},
+    {ref: "Habakuk 3:17–18", text: "Sekalipun pohon ara tidak berbunga, pohon anggur tidak berbuah, hasil pohon zaitun mengecewakan, sekalipun ladang-ladang tidak menghasilkan bahan makanan, kambing domba terhalau dari kurungan, dan tidak ada lembu sapi dalam kandang, namun aku akan bersorak-sorak di dalam TUHAN, beria-ria di dalam Allah yang menyelamatkan aku."},
+    {ref: "Mazmur 31:25", text: "Kuatkanlah dan teguhkanlah hatimu, hai semua orang yang berharap kepada TUHAN!"},
+    {ref: "Ibrani 11:6", text: "Tetapi tanpa iman tidak mungkin orang berkenan kepada Allah. Sebab barangsiapa berpaling kepada Allah, ia harus percaya bahwa Allah ada, dan bahwa Allah memberi upah kepada orang yang sungguh-sungguh mencari Dia."},
+    {ref: "Mazmur 52:10", text: "Tetapi aku seperti pohon zaitun yang menghijau di rumah Allah; aku percaya akan kasih setia Allah untuk seterusnya dan selamanya."},
+    {ref: "Roma 15:4", text: "Sebab segala sesuatu yang ditulis dahulu, telah ditulis untuk menjadi pelajaran bagi kita, supaya kita teguh berpegang pada pengharapan oleh ketekunan dan penghiburan dari Kitab Suci."},
+    {ref: "Mazmur 40:18", text: "Tetapi aku ini sengsara dan miskin, Tuhan memikirkan aku. Engkaulah penolongku dan penyelamatku, ya Allahku, janganlah berlambat!"},
+    {ref: "Yesaya 50:7", text: "Tetapi Tuhan ALLAH menolong aku; oleh sebab itu aku tidak mendapat noda; oleh sebab itu aku meneguhkan hatiku seperti keteguhan gunung batu, dan aku tahu bahwa aku tidak akan mendapat malu."},
+    {ref: "Mazmur 86:7", text: "Pada hari kesesakanku aku berseru kepada-Mu, sebab Engkau menjawab aku."},
+    {ref: "Mazmur 71:5", text: "Sebab Engkaulah harapanku, ya Tuhan ALLAH, kepercayaanku sejak masa mudaku."},
+    {ref: "Mazmur 119:114", text: "Engkaulah persembunyianku dan perisaiku; aku berharap kepada firman-Mu."},
+    {ref: "Yesaya 25:9", text: "Pada waktu itu orang akan berkata: “Sungguh, inilah Allah kita, yang kita nantikan, supaya Ia menyelamatkan kita. Inilah TUHAN yang kita nantikan; marilah kita bersorak-sorai dan bersukacita oleh karena keselamatan yang diadakan-Nya!”"},
+    {ref: "Mazmur 62:9", text: "Hanya Allah saja adalah batu karangku dan keselamatanku, kota bentengku; aku tidak akan goyah."},
+    {ref: "Ibrani 12:28", text: "Sebab itu, karena kita menerima kerajaan yang tidak tergoncangkan, marilah kita mengucap syukur dan beribadah kepada Allah menurut cara yang berkenan kepada-Nya, dengan hormat dan takut."},
+    {ref: "Mazmur 85:9", text: "Sesungguhnya keselamatan dari pada-Nya dekat kepada orang-orang yang takut akan Dia, sehingga kemuliaan diam di negeri kita."},
+    {ref: "Mazmur 143:8", text: "Perlihatkanlah kasih setia-Mu kepadaku pada waktu pagi, sebab kepada-Mu aku percaya; beritahukanlah kepadaku jalan yang harus kutempuh, sebab kepada-Mulah aku mengangkat jiwaku."},
+    {ref: "Yesaya 64:4", text: "Tidak pernah orang mendengar, tidak pernah telinga menangkap, tidak pernah mata melihat Allah selain Engkau yang bertindak bagi orang yang menanti-nantikan Dia."},
+    {ref: "Mazmur 25:3", text: "Ya, semua orang yang menanti-nantikan Engkau tidak akan mendapat malu; orang-orang yang berbuat khianat dengan tidak ada alasannya akan mendapat malu."},
+    {ref: "Roma 8:24", text: "Sebab kita diselamatkan dalam pengharapan. Tetapi pengharapan yang dilihat, bukan pengharapan lagi; sebab bagaimana orang masih mengharapkan apa yang dilihatnya?"},
+    {ref: "Mazmur 37:7", text: "Berdiam dirilah di hadapan TUHAN dan nantikanlah Dia; jangan marah karena orang yang berhasil dalam hidupnya, karena orang yang melakukan tipu daya."},
+    {ref: "Mazmur 16:8", text: "Aku senantiasa memandang kepada TUHAN; karena Ia berdiri di sebelah kananku, aku tidak goyah."},
+    {ref: "Yesaya 57:18–19", text: "Aku telah melihat segala jalannya, tetapi Aku akan menyembuhkan dan menuntun dia, dan memberi penghiburan kepadanya dan kepada orang-orangnya yang berkabung. Aku menciptakan puji-pujian di bibir orang-orang: Damai, damai sejahtera bagi mereka yang jauh dan yang dekat, firman TUHAN, Aku akan menyembuhkan dia."},
+    {ref: "Mazmur 30:12", text: "Supaya jiwaku menyanyikan puji-pujian bagi-Mu dan tidak berdiam diri. TUHAN, Allahku, untuk selama-lamanya aku mau menyanyikan syukur bagi-Mu."},
+    {ref: "Mazmur 97:11", text: "Terang terbit bagi orang benar, dan sukacita bagi orang-orang yang tulus hati."},
+    {ref: "Yesaya 58:11", text: "TUHAN akan menuntun engkau senantiasa, dan akan memuaskan hatimu di tanah yang kering, dan akan membaharui kekuatanmu; engkau akan seperti taman yang diairi dengan baik dan seperti mata air yang tidak pernah mengecewakan."},
+    {ref: "Mazmur 126:2", text: "Pada waktu itu mulut kita penuh dengan tertawa, dan lidah kita dengan sorak-sorai. Pada waktu itu berkatalah orang di antara bangsa-bangsa: “TUHAN telah melakukan perkara besar kepada orang-orang ini!”"},
+    {ref: "Mazmur 42:12", text: "Mengapa engkau tertekan, hai jiwaku, dan mengapa engkau gelisah di dalam diriku? Berharaplah kepada Allah! Sebab aku akan bersyukur lagi kepada-Nya, penolongku dan Allahku!"},
+    {ref: "Yesaya 51:11", text: "Maka orang-orang yang ditebus TUHAN akan kembali dan masuk ke Sion dengan sorak-sorai; sorak-sorai abadi akan ada di atas kepala mereka; kegirangan dan sukacita akan mereka peroleh, dukacita dan keluh kesah akan lenyap."},
+    {ref: "Mazmur 119:165", text: "Besar ketenteraman bagi orang-orang yang mencintai Taurat-Mu, tidak ada batu sandungan bagi mereka."},
+    {ref: "Yesaya 32:17", text: "Di mana ada kebenaran, di situ akan tumbuh damai sejahtera, dan akibat kebenaran ialah ketenangan dan ketenteraman untuk selama-lamanya."},
+    {ref: "Mazmur 89:16", text: "Berbahagialah bangsa yang tahu bersorak-sorai; mereka berjalan, ya TUHAN, dalam cahaya wajah-Mu."},
+    {ref: "Yesaya 12:3", text: "Maka kamu akan menimba air dengan kegirangan dari mata air keselamatan."},
+    {ref: "Mazmur 21:7", text: "Sebab raja percaya kepada TUHAN, dan karena kasih setia Yang Mahatinggi ia tidak goyah."},
+    {ref: "Mazmur 65:12", text: "Engkau memahkotai tahun dengan kebaikan-Mu, jejak-Mu meneteskan kelimpahan."},
+    {ref: "Mazmur 36:8", text: "Betapa berharganya kasih setia-Mu, ya Allah! Anak-anak manusia berlindung dalam naungan sayap-Mu."},
+    {ref: "Yesaya 44:22", text: "Aku telah menghapus pelanggaran-pelanggaranmu seperti kabut yang lenyap dan dosa-dosamu seperti awan yang hilang. Kembalilah kepada-Ku, sebab Aku telah menebus engkau."},
+    {ref: "Mazmur 103:2–3", text: "Pujilah TUHAN, hai jiwaku, dan janganlah lupakan segala kebaikan-Nya! Dia yang mengampuni segala kesalahanmu, yang menyembuhkan segala penyakitmu."},
+    {ref: "Mazmur 66:12", text: "Kami berjalan ke dalam api dan air, tetapi Engkau telah membawa kami keluar ke tempat yang lega."},
+    {ref: "Yesaya 61:7", text: "Sebagai ganti kerendahan hati mereka akan mendapat kehormatan berlipat ganda, dan sebagai ganti kehinaan mereka akan bersorak-sorai atas bagiannya; sebab itu mereka akan memiliki dua kali lipat di negeri mereka, dan sukacita kekal akan menjadi milik mereka."},
+    {ref: "Mazmur 28:9", text: "Selamatkanlah umat-Mu dan berkatilah milik pusaka-Mu; gembalakanlah mereka dan dukunglah mereka untuk selama-lamanya."},
+    {ref: "Pengkhotbah 3:11", text: "Ia membuat segala sesuatu indah pada waktunya, bahkan Ia memberikan kekekalan dalam hati mereka. Tetapi manusia tidak dapat menyelami pekerjaan yang dilakukan Allah dari awal sampai akhir."},
+    {ref: "Mazmur 127:1", text: "Jikalau bukan TUHAN yang membangun rumah, sia-sialah usaha orang yang membangunnya; jikalau bukan TUHAN yang mengawal kota, sia-sialah pengawal berjaga-jaga."},
+    {ref: "Amsal 10:22", text: "Berkat TUHANlah yang menjadikan kaya, susah payah tidak akan menambahinya."},
+    {ref: "Mazmur 145:13", text: "Kerajaan-Mu ialah kerajaan segala abad, dan pemerintahan-Mu tetap melalui segala keturunan."},
+    {ref: "Yesaya 46:4", text: "Sampai masa tuamu Aku tetap Dia dan sampai masa putih rambutmu Aku menggendong kamu. Aku telah menjadikan dan akan menanggung kamu; Aku akan memikul dan menyelamatkan kamu."},
+    {ref: "Mazmur 128:1", text: "Berbahagialah setiap orang yang takut akan TUHAN, yang hidup menurut jalan yang ditunjukkan-Nya!"},
+    {ref: "Amsal 13:12", text: "Harapan yang tertunda menyedihkan hati, tetapi keinginan yang terpenuhi adalah pohon kehidupan."},
+    {ref: "Mazmur 90:14", text: "Kenyangkanlah kami di waktu pagi dengan kasih setia-Mu, supaya kami bersorak-sorai dan bersukacita semasa hari-hari kami."},
+    {ref: "Yesaya 65:24", text: "Sebelum mereka berseru Aku sudah menjawab, ketika mereka sedang berbicara Aku sudah mendengar."},
+    {ref: "Mazmur 75:8", text: "Tetapi Allah adalah Hakim: direndahkan-Nya yang satu dan ditinggikan-Nya yang lain."},
+    {ref: "Mazmur 20:5", text: "Kami mau bersorak-sorai tentang kemenanganmu dan mengibarkan panji-panji demi nama Allah kita; kiranya TUHAN memenuhi segala permintaanmu!"},
+    {ref: "Yesaya 40:29", text: "Dia memberi kekuatan kepada yang lelah dan menambah semangat kepada yang tiada berdaya."},
+    {ref: "Mazmur 119:71", text: "Bahwa aku tertindas itu baik bagiku, supaya aku belajar ketetapan-ketetapan-Mu."},
+    {ref: "Mazmur 107:9", text: "Sebab Ia memuaskan hati yang dahaga, dan hati yang lapar dikenyangkan-Nya dengan kebaikan."},
+    {ref: "Yesaya 62:3", text: "Engkau akan menjadi mahkota keindahan di tangan TUHAN dan serban kerajaan di tangan Allahmu."},
+    {ref: "Mazmur 34:9", text: "Kecaplah dan lihatlah, betapa baiknya TUHAN itu! Berbahagialah orang yang berlindung pada-Nya!"},
+    {ref: "Mazmur 145:9", text: "TUHAN itu baik kepada semua orang, dan penuh rahmat terhadap segala yang dijadikan-Nya."},
+    {ref: "Yesaya 43:19", text: "Lihat, Aku hendak membuat sesuatu yang baru, yang sekarang sudah tumbuh, belumkah kamu mengetahuinya? Ya, Aku hendak membuat jalan di padang gurun dan sungai-sungai di padang belantara."},
+    {ref: "Mazmur 119:105", text: "Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku."},
+    {ref: "Mazmur 37:18", text: "TUHAN mengetahui hari-hari orang yang saleh, dan milik pusaka mereka akan tetap selama-lamanya."},
+    {ref: "Yesaya 54:17", text: "Setiap senjata yang ditempa untuk melawan engkau tidak akan berhasil, dan setiap lidah yang melontarkan tuduhan terhadap engkau dalam pengadilan akan kautunjukkan kesalahannya."},
+    {ref: "Mazmur 112:1", text: "Berbahagialah orang yang takut akan TUHAN, yang sangat suka kepada segala perintah-Nya."},
+    {ref: "Mazmur 92:5", text: "Betapa besar pekerjaan-Mu, ya TUHAN, dan betapa dalamnya rancangan-rancangan-Mu!"},
+    {ref: "Yesaya 45:2", text: "Aku sendiri akan berjalan di depanmu dan akan meratakan gunung-gunung; Aku akan memecahkan pintu-pintu tembaga dan mematahkan palang-palang besi."},
+    {ref: "Mazmur 84:8", text: "TUHAN Allah adalah matahari dan perisai; TUHAN memberikan kasih karunia dan kemuliaan; Ia tidak menahan kebaikan dari orang yang hidup tidak bercela."},
+    {ref: "Mazmur 121:1", text: "Aku melayangkan mataku ke gunung-gunung; dari manakah akan datang pertolonganku?"},
+    {ref: "Yesaya 52:7", text: "Betapa indahnya di atas gunung-gunung kaki orang yang membawa kabar baik, yang memberitakan damai sejahtera, yang menyampaikan berita keselamatan."},
+    {ref: "Mazmur 86:11", text: "Tunjukkanlah kepadaku jalan-Mu, ya TUHAN, supaya aku hidup menurut kebenaran-Mu; bulatkanlah hatiku untuk takut akan nama-Mu."},
+    {ref: "Mazmur 90:12", text: "Ajarlah kami menghitung hari-hari kami sedemikian, hingga kami beroleh hati yang bijaksana."},
+    {ref: "Yesaya 41:13", text: "Sebab Aku ini TUHAN, Allahmu, yang memegang tangan kananmu dan berkata kepadamu: “Jangan takut, Akulah yang menolong engkau.”"},
+    {ref: "Mazmur 34:6", text: "Orang yang tertindas ini berseru, dan TUHAN mendengar; Ia menyelamatkan dia dari segala kesesakannya."},
+    {ref: "Mazmur 73:28", text: "Tetapi aku, dekat kepada Allah adalah baik bagiku; aku menaruh tempat perlindunganku pada Tuhan ALLAH."},
+    {ref: "Yesaya 55:12", text: "Sungguh, kamu akan berangkat dengan sukacita dan dihantar dengan damai; gunung-gunung dan bukit-bukit akan bergembira bersorak-sorai di depanmu."},
+    {ref: "Mazmur 119:49", text: "Ingatlah akan firman yang Kauberikan kepada hamba-Mu, oleh karena Engkau memberi aku harapan."},
+    {ref: "Mazmur 33:22", text: "Kiranya kasih setia-Mu, ya TUHAN, menyertai kami, sesuai dengan pengharapan kami kepada-Mu."},
+    {ref: "Yesaya 26:12", text: "Ya TUHAN, Engkau akan memberi kami damai sejahtera, sebab segala usaha kami pun Kaulakukan bagi kami."},
+    {ref: "Mazmur 40:9", text: "Aku suka melakukan kehendak-Mu, ya Allahku; Taurat-Mu ada dalam dadaku."},
+    {ref: "Mazmur 145:19", text: "Ia memenuhi keinginan orang-orang yang takut akan Dia, Ia mendengar teriak mereka dan menyelamatkan mereka."},
+    {ref: "Yesaya 60:22", text: "Yang paling kecil akan menjadi kaum yang besar, dan yang paling lemah akan menjadi bangsa yang kuat; Aku, TUHAN, akan melaksanakannya dengan segera pada waktunya."},
+    {ref: "Mazmur 91:16", text: "Dengan panjang umur akan Kukenyangkan dia, dan akan Kuperlihatkan kepadanya keselamatan dari pada-Ku."}
 ];
-
-/* ================== LOGIC (TIDAK DIUBAH) ================== */
+/* ================== LOGIC ================== */
 const nameInput=document.getElementById("nameInput");
 const startBtn=document.getElementById("startBtn");
 const displayName=document.getElementById("displayName");
@@ -238,48 +358,43 @@ ambilLagi.onclick=()=>{
 result.onclick=stopShuffle;
 tapHint.onclick=stopShuffle;
 
-shareBtn.onclick = () => {
-  clearInterval(shuffle); // kunci ayat (aman & konsisten)
-  if (!currentVerse) return;
+shareBtn.onclick=()=>{
+  clearInterval(shuffle);
+  if(!currentVerse) return;
 
-  const ctx = canvas.getContext("2d");
-  const bg = new Image();
-  const logo = new Image();
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  bg.src = "background.jpeg";
-  logo.src = "logo.png";
+  const bg=new Image();
+  const logo=new Image();
+  bg.src="background.jpeg";
+  logo.src="logo.png";
 
-  bg.onload = () => {
-    const r = Math.max(1080 / bg.width, 1920 / bg.height);
-    ctx.drawImage(
-      bg,
-      (1080 - bg.width * r) / 2,
-      (1920 - bg.height * r) / 2,
-      bg.width * r,
-      bg.height * r
-    );
+  bg.onload=()=>{
+    const r=Math.max(1080/bg.width,1920/bg.height);
+    ctx.drawImage(bg,(1080-bg.width*r)/2,(1920-bg.height*r)/2,bg.width*r,bg.height*r);
 
-    logo.onload = () => {
-      ctx.drawImage(logo, (1080 - 180) / 2, 360, 180, 180);
+    logo.onload=()=>{
+      ctx.drawImage(logo,(1080-180)/2,360,180,180);
 
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 64px Arial";
-      ctx.fillText(lastName, 120, 760);
+      ctx.fillStyle="#fff";
+      ctx.font="bold 64px Arial";
+      ctx.fillText(lastName,120,760);
 
-      ctx.font = "52px Arial";
-      wrapText(
-        ctx,
-        `${currentVerse.ref}\n\n${currentVerse.text}`,
-        120,
-        860,
-        840,
-        72
-      );
+      ctx.font="52px Arial";
+      wrapText(ctx,`${currentVerse.ref}\n\n${currentVerse.text}`,120,860,840,72);
 
-      canvas.toBlob(blob => {
-        navigator.share({
-          files: [new File([blob], "ayat.png", { type: "image/png" })]
-        });
+      canvas.toBlob(blob=>{
+        if(navigator.share){
+          navigator.share({files:[new File([blob],"ayat.png",{type:"image/png"})]});
+        }else{
+          const a=document.createElement("a");
+          a.href=URL.createObjectURL(blob);
+          a.download="ayat.png";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
       });
     };
   };
@@ -290,10 +405,14 @@ function wrapText(ctx,text,x,y,w,h){
     let line="";
     p.split(" ").forEach(word=>{
       const t=line+word+" ";
-      if(ctx.measureText(t).width>w){ctx.fillText(line,x,y);line=word+" ";y+=h;}
-      else line=t;
+      if(ctx.measureText(t).width>w){
+        ctx.fillText(line,x,y);
+        line=word+" ";
+        y+=h;
+      }else line=t;
     });
-    ctx.fillText(line,x,y);y+=h;
+    ctx.fillText(line,x,y);
+    y+=h;
   });
 }
 </script>
